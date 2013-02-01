@@ -1,0 +1,12 @@
+{
+    "env" : [
+        {
+            "name" : "staging",
+            "packages": [
+                { "name" : "github.com/adeven/redis",         "branch" : "master" },
+                { "name" : "github.com/bmizerany/pq",         "branch" : "master" },
+                { "name" : "github.com/vmihailenco/bufio",    "branch" : "master" }
+            ]
+        }
+    ]
+}
