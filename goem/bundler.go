@@ -59,9 +59,8 @@ func (self *Bundler) build(binName string) {
 		"-o",
 		binName,
 		self.getSourceFiles(),
-	).CombinedOutput()
-	//err := cmd.Run()
-	fmt.Printf("The date is %s\n", out)
+	)
+	err := cmd.Run()
 	if err != nil {
 		log.Println(err)
 	}
