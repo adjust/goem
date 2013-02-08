@@ -1,7 +1,6 @@
 package goem
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -53,7 +52,7 @@ func (self *Bundler) build(binName string) {
 	if binName == "" {
 		binName = "a.out"
 	}
-	out, err := exec.Command(
+	cmd := exec.Command(
 		"/usr/bin/go",
 		"build",
 		"-o",
@@ -149,7 +148,7 @@ func (self *Bundler) setHead(pkg Package) {
 	)
 	err = cmd.Run()
 	if err != nil {
-		log.Println(err)
+		log.Println("set Head: " + err.Error())
 	}
 	os.Chdir(currentDir)
 }

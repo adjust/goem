@@ -1,0 +1,4 @@
+#!/bin/bash
+
+go build -o goem main.go
+cp gÖm /usr/local/bin
