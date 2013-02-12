@@ -1,4 +1,9 @@
 #!/bin/bash
 
-go build -o goem main.go
-cp gÖm /usr/local/bin
+if [ ! -d ./_build ]; then
+    mkdir ./_build
+    go build -o _build/goem main.go
+    cp _build/goem /usr/local/bin
+    rm -rf ./_build
+fi
+
