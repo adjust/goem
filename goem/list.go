@@ -45,7 +45,7 @@ func (self *Lister) list() {
 func (self *Lister) dirRead(called int, path string) error {
 	called++
 	if called == 4 {
-		return
+		return nil
 	}
 	dirGlob, err := filepath.Glob(path + "/*")
 	if err != nil {
