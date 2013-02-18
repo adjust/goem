@@ -12,8 +12,6 @@ import (
 
 // bundler object is supposed to collect all necessary go third party modules
 type Bundler struct {
-	goPath string
-	goEnv  string
 	config *Config
 }
 
@@ -21,21 +19,8 @@ type Bundler struct {
 // on error it exits
 // NewBundler sets the GOPATH to ./.go
 func NewBundler(config *Config) *Bundler {
-	goEnv := os.Getenv("GO_ENV")
-	if goEnv == "" {
-		goEnv = "development"
-	}
-	goPath, err := os.Getwd()
-	if err != nil {
-		fmt.Printf("Could not construct Bundler Object: %s\n", err.Error())
-		os.Exit(1)
-	} else {
-		goPath += "/.go"
-	}
 	bundler := &Bundler{
-		goPath: goPath,
 		config: config,
-		goEnv:  goEnv,
 	}
 	return bundler
 }
@@ -50,8 +35,9 @@ func (self *Bundler) bundle() {
 		os.Exit(1)
 	}
 	for _, env := range self.config.Env {
-		if self.goEnv == env.Name {
+		if getGoEnv() == env.Name {
 			self.getPackages(env.Packages)
+			break
 		}
 	}
 }
@@ -60,13 +46,7 @@ func (self *Bundler) bundle() {
 // build() builds either an a.out binary in the current working dir
 // or in the path given with the optional binary name
 func (self *Bundler) build(binName string) {
-	self.bundle()
-	cwd, err := os.Getwd()
-	if err != nil {
-		fmt.Printf("while trying to get working dir: " + err.Error())
-	}
-
-	os.Setenv("GOPATH", cwd+"/.go")
+	setGoPath()
 	if binName == "" {
 		binName = "a.out"
 	}
@@ -95,7 +75,7 @@ func (self *Bundler) build(binName string) {
 func (self *Bundler) makeBase() error {
 	goDirs := [3]string{"/src", "/pkg", "/bin"}
 	for _, ext := range goDirs {
-		err := os.MkdirAll(self.goPath+ext, 0777)
+		err := os.MkdirAll(getGoPath()+ext, 0777)
 		if err != nil {
 			return fmt.Errorf("while creating needed dirs: " + err.Error())
 		}
@@ -129,7 +109,7 @@ func (self *Bundler) getPackages(packages []Package) {
 // sourceExist simpy checks if the source directory already exists
 // it returns true if so, false otherwise
 func (self *Bundler) sourceExist(pkg Package) bool {
-	dir := self.goPath + "/src/" + pkg.Name
+	dir := getGoPath() + "/src/" + pkg.Name
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return false
 	}
@@ -140,20 +120,14 @@ func (self *Bundler) sourceExist(pkg Package) bool {
 // on error it tries to remove created dirs and reports on failure to do so
 // also it returns the failure
 func (self *Bundler) getSource(pkg Package) error {
-	cmd := exec.Command(
-		"git",
-		"clone",
-		"https://"+pkg.Name+".git",
-		self.goPath+"/src/"+pkg.Name,
-	)
-	out, err := cmd.CombinedOutput()
+	err := git.clone(pkg)
 	if err != nil {
-		delErr := os.RemoveAll(path.Dir(self.goPath + "/src/" + pkg.Name))
+		delErr := os.RemoveAll(path.Dir(getGoPath() + "/src/" + pkg.Name))
 		if delErr != nil {
 			fmt.Printf("An error occured while getting the source, but i am unable to tidy up\n")
-			fmt.Printf("Please remove %s manually\n\n", path.Dir(self.goPath+"/src/"+pkg.Name))
+			fmt.Printf("Please remove %s manually\n\n", path.Dir(getGoPath()+"/src/"+pkg.Name))
 		}
-		return fmt.Errorf("Could not get source:\n\n%s\n"+err.Error(), out)
+		return fmt.Errorf("Could not get source:\n\n" + err.Error())
 	}
 	return nil
 }
@@ -161,52 +135,22 @@ func (self *Bundler) getSource(pkg Package) error {
 // updateSource() tries to call git pull after switching to master branch
 // on error it returns the error
 func (self *Bundler) updateSource(pkg Package) error {
-	currentDir, err := os.Getwd()
+	err := git.pull(pkg)
 	if err != nil {
-		return fmt.Errorf("while trying to get working dir: " + err.Error())
+		fmt.Printf(err.Error())
+		os.Exit(1)
 	}
-	dir := self.goPath + "/src/" + pkg.Name
-	os.Chdir(dir)
-	cmd := exec.Command(
-		"git",
-		"checkout",
-		"master",
-	)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("Could not switch branch:\n\n%s\n"+err.Error(), out)
-	}
-	cmd = exec.Command(
-		"git",
-		"pull",
-	)
-	out, err = cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("Could not update source:\n\n%s\n"+err.Error(), out)
-	}
-	os.Chdir(currentDir)
 	return nil
 }
 
 // setHead() tries to set the head according to the Gofile with git checkout
 // on error it returns the error
 func (self *Bundler) setHead(pkg Package) error {
-	currentDir, err := os.Getwd()
+	err := git.checkout(pkg, "")
 	if err != nil {
-		return fmt.Errorf("while trying to get working dir: " + err.Error())
+		fmt.Printf(err.Error())
+		os.Exit(1)
 	}
-	dir := self.goPath + "/src/" + pkg.Name
-	os.Chdir(dir)
-	cmd := exec.Command(
-		"git",
-		"checkout",
-		pkg.Branch,
-	)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("Could not switch head:\n\n%s\n"+err.Error(), out)
-	}
-	os.Chdir(currentDir)
 	return nil
 }
 

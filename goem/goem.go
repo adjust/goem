@@ -1,8 +1,11 @@
 package goem
 
 import (
+	"fmt"
 	"os"
 )
+
+var git Git
 
 // goem just holds a few fuctions, which create the needed objects
 // all these functions exit after being called
@@ -12,7 +15,6 @@ import (
 func List() {
 	lister := NewList()
 	lister.list()
-	os.Exit(0)
 }
 
 // Bundle() is supposed to get all packages specified in the Gofile
@@ -22,15 +24,47 @@ func Bundle() {
 	config := NewConfig()
 	bundler := NewBundler(config)
 	bundler.bundle()
-	os.Exit(0)
+	dep := NewDepCheck(config)
+	dep.Start()
+	config = NewLockConfig()
+	bundler = NewBundler(config)
+	bundler.bundle()
 }
 
 // Build() builds the binary file
 // if no output file is set it will create a.out in the current working dir
 // Build() calls Bundle() before building the binary so calling Bundle() is useless
 func Build(binName string) {
-	config := NewConfig()
+	Bundle()
+	config := NewLockConfig()
 	bundler := NewBundler(config)
 	bundler.build(binName)
-	os.Exit(0)
+}
+
+func getGoEnv() string {
+	goEnv := os.Getenv("GO_ENV")
+	if goEnv == "" {
+		goEnv = "development"
+	}
+	return goEnv
+}
+
+func getGoPath() string {
+	goPath, err := os.Getwd()
+	if err != nil {
+		fmt.Printf("Could not construct Bundler Object: %s\n", err.Error())
+		os.Exit(1)
+	} else {
+		goPath += "/.go/"
+	}
+	return goPath
+}
+
+func setGoPath() {
+	cwd, err := os.Getwd()
+	if err != nil {
+		fmt.Printf("while trying to get working dir: " + err.Error())
+	}
+
+	os.Setenv("GOPATH", cwd+"/.go")
 }
