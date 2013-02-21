@@ -33,9 +33,7 @@ func Bundle() {
 
 // Build() builds the binary file
 // if no output file is set it will create a.out in the current working dir
-// Build() calls Bundle() before building the binary so calling Bundle() is useless
 func Build(binName string) {
-	Bundle()
 	config := NewLockConfig()
 	bundler := NewBundler(config)
 	bundler.build(binName)
