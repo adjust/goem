@@ -186,6 +186,12 @@ func (self *DepCheck) cmpPkgList(pkgList, otherPkgList []Package, goPkg, otherGo
 }
 
 func (self *DepCheck) resolveDep(pkg1, pkg2 Package) string {
+	if pkg1.Branch == "self" {
+		return pkg1.Branch
+	}
+	if pkg2.Branch == "self" {
+		return pkg2.Branch
+	}
 	branch1, _ := git.refNameToCommit(pkg1)
 	if branch1 == "" {
 		branch1 = pkg1.Branch

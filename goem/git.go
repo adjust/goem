@@ -50,7 +50,7 @@ func (self *Git) checkout(pkg Package, branch string) error {
 func (self *Git) pull(pkg Package) error {
 	err := self.checkout(pkg, "master")
 	if err != nil {
-		return err
+		return fmt.Errorf("git pull: %s", err.Error())
 	}
 
 	oldDir := self.dirSwap(pkg, "")
@@ -103,7 +103,7 @@ func (self *Git) log(pkg Package, format string) ([]string, error) {
 func (self *Git) refNameToCommit(pkg Package) (string, error) {
 	gitlog, err := self.log(pkg, "%H %d")
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("refNameToCommit: %s", err.Error())
 	}
 	regex := regexp.MustCompile(self.checkBranch(pkg.Branch))
 	for _, line := range gitlog {
