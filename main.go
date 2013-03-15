@@ -11,6 +11,7 @@ var actions = map[string]interface{}{
 	"bundle": goem.Bundle,
 	"build":  goem.Build,
 	"test":   goem.Test,
+	"help":   goem.Help,
 }
 
 func main() {
@@ -37,7 +38,11 @@ func main() {
 		} else if k == action && action == "test" {
 			v.(func())()
 			os.Exit(0)
+		} else if k == action && action == "help" {
+			v.(func(string))(subOption)
+			os.Exit(0)
 		}
 	}
+	goem.Help("")
 	log.Println("unknown action")
 }
