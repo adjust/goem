@@ -39,6 +39,11 @@ func Build(binName string) {
 	bundler.build(binName)
 }
 
+func Test() {
+	config := NewConfig()
+	test(config)
+}
+
 func getGoEnv() string {
 	goEnv := os.Getenv("GO_ENV")
 	if goEnv == "" {

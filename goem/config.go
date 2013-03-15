@@ -17,7 +17,8 @@ type GoPkg struct {
 // config has an array of environments which have a name and an array of
 // third party packages
 type Config struct {
-	Env []Env
+	Env     []Env
+	Testdir string
 }
 
 type Env struct {
