@@ -94,8 +94,6 @@ a commit hash or a tag.
 If branch is set to 'self', goem assumes you have your library *.go
 files in a subfolder with the same name as your project and symlinks this
 to the goem Gopath.
-Also you can use a relative or absolute path. This will also put a symlink to
-the goem Gopath.
 
 e.g.:
 
@@ -120,7 +118,8 @@ e.g.:
 
 Would create a symlink from project_name/projectname to
 project_name/.go/src/your_account/project_name
-
+Also you can use a relative or absolute path. This will also put a symlink to
+the goem Gopath.
 
 ### Build
 
