@@ -6,7 +6,7 @@ import (
 	"os/exec"
 )
 
-func test(config *Config) {
+func test(config *Config) bool {
 	setGoPath()
 	os.Chdir(config.Testdir)
 	cmd := exec.Command(
@@ -24,8 +24,9 @@ func test(config *Config) {
 	out, err = cmd.CombinedOutput()
 	if err != nil {
 		fmt.Printf("%s %s\n", out, err.Error())
+		return false
 	} else {
 		fmt.Printf("%s\n", out)
 	}
-
+	return true
 }

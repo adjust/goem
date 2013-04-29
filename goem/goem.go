@@ -41,7 +41,9 @@ func Build(binName string) {
 
 func Test() {
 	config := NewConfig()
-	test(config)
+	if !test(config) {
+		os.Exit(1)
+	}
 }
 
 func getGoEnv() string {
