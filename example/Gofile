@@ -3,12 +3,28 @@
         {
             "name" : "development",
             "packages": [
-                { "name" : "github.com/adeven/redis",         "branch" : "master" },
-                { "name" : "github.com/bmizerany/pq",         "branch" : "master" },
-                { "name" : "github.com/vmihailenco/bufio",    "branch" : "master" },
-                { "name" : "github.com/adeven/epf2sql",    "branch" : "master" },
-                { "name" : "github.com/adeven/goenv","branch" : "master" }
+                {
+                    "name" : "github.com/adeven/redis",
+                    "branch" : "master"
+                },
+                {
+                    "name" : "github.com/bmizerany/pq",
+                    "branch" : "master"
+                },
+                {
+                    "name" : "github.com/vmihailenco/bufio",
+                    "branch" : "master"
+                },
+                {
+                    "name" : "github.com/adeven/epf2sql",
+                    "branch" : "master"
+                },
+                {
+                    "name" : "github.com/adeven/goenv",
+                    "branch" : "master"
+                }
             ]
         }
-    ]
+    ],
+    "testdir": "/path/to/testdir"
 }
