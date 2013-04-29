@@ -92,6 +92,23 @@ func (self *Bundler) getPackages(packages []Package) {
 		/*
 		   TODO: add "this" branch option here
 		*/
+		if self.checkForPath(pkg.Branch) {
+			name, err := os.Getwd()
+			if err != nil {
+				fmt.Printf(err.Error())
+			}
+			name += "/" + pkg.Branch
+			err = os.RemoveAll(getGoPath() + "/src/" + pkg.Name)
+			if err != nil {
+				fmt.Printf("while trying to remove useless folder: %s", err.Error())
+			}
+			os.Mkdir(getGoPath()+"/src/", 0777)
+			err = os.Symlink(name, getGoPath()+"/src/"+pkg.Name)
+			if err != nil {
+				fmt.Printf("while trying to set 'self' link: %s\n", err.Error())
+			}
+			continue
+		}
 		if pkg.Branch == "self" {
 			name, err := os.Getwd()
 			if err != nil {
@@ -109,6 +126,24 @@ func (self *Bundler) getPackages(packages []Package) {
 			}
 			continue
 		}
+		if pkg.Branch == "up" {
+			pwd, err := os.Getwd()
+			if err != nil {
+				fmt.Printf(err.Error())
+			}
+			name := path.Dir(path.Dir(pwd))
+			err = os.RemoveAll(getGoPath() + "/src/" + pkg.Name)
+			if err != nil {
+				fmt.Printf("while trying to remove useless folder: %s", err.Error())
+			}
+			os.MkdirAll(getGoPath()+"src/"+path.Dir(pkg.Name), 0777)
+			err = os.Symlink(name, getGoPath()+"/src/"+pkg.Name)
+			if err != nil {
+				fmt.Printf("while trying to set 'self' link: %s\n", err.Error())
+			}
+			continue
+		}
+
 		if !self.sourceExist(pkg) {
 			err := self.getSource(pkg)
 			if err != nil {
@@ -124,6 +159,14 @@ func (self *Bundler) getPackages(packages []Package) {
 		}
 		self.setHead(pkg)
 	}
+}
+
+// checkForPath
+func (self *Bundler) checkForPath(path string) bool {
+	if path[0] == '/' || path[0] == '.' {
+		return true
+	}
+	return false
 }
 
 // sourceExist simpy checks if the source directory already exists

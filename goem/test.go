@@ -12,7 +12,6 @@ func test(config *Config) {
 	cmd := exec.Command(
 		"/usr/bin/go",
 		"test",
-		"-i",
 	)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
