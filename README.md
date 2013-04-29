@@ -89,11 +89,13 @@ If the Gofile provides only one env, this env is read.
 * packages
 
 Packages have a name and a branch. The name is the same as the one
-you would use for a 'go get <package>. The branch can be a branch,
+you would use for a 'go get package'. The branch can be a branch,
 a commit hash or a tag.
 If branch is set to 'self', goem assumes you have your library *.go
 files in a subfolder with the same name as your project and symlinks this
 to the goem Gopath.
+Also you can use a relative or absolute path. This will also put a symlink to
+the goem Gopath.
 
 e.g.:
 
