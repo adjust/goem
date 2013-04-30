@@ -89,9 +89,6 @@ func (self *Bundler) makeBase() error {
 // on error getPackages exits
 func (self *Bundler) getPackages(packages []Package) {
 	for _, pkg := range packages {
-		/*
-		   TODO: add "this" branch option here
-		*/
 		if self.checkForPath(pkg.Branch) {
 			name, err := os.Getwd()
 			if err != nil {
@@ -126,24 +123,6 @@ func (self *Bundler) getPackages(packages []Package) {
 			}
 			continue
 		}
-		if pkg.Branch == "up" {
-			pwd, err := os.Getwd()
-			if err != nil {
-				fmt.Printf(err.Error())
-			}
-			name := path.Dir(path.Dir(pwd))
-			err = os.RemoveAll(getGoPath() + "/src/" + pkg.Name)
-			if err != nil {
-				fmt.Printf("while trying to remove useless folder: %s", err.Error())
-			}
-			os.MkdirAll(getGoPath()+"src/"+path.Dir(pkg.Name), 0777)
-			err = os.Symlink(name, getGoPath()+"/src/"+pkg.Name)
-			if err != nil {
-				fmt.Printf("while trying to set 'self' link: %s\n", err.Error())
-			}
-			continue
-		}
-
 		if !self.sourceExist(pkg) {
 			err := self.getSource(pkg)
 			if err != nil {

@@ -18,14 +18,21 @@ type DepCheck struct {
 	list *Lister
 	// the config this package
 	config *Config
+	//quiet flag
+	q bool
 }
 
 // Constructor that sets the defaults
-func NewDepCheck(config *Config) *DepCheck {
+func NewDepCheck(config *Config, subOption string) *DepCheck {
+	q := false
+	if len(subOption) > 0 && subOption[0] == 'q' {
+		q = true
+	}
 	return &DepCheck{
 		goPath: getGoPath(),
 		list:   NewList(),
 		config: config,
+		q:      q,
 	}
 }
 
@@ -71,7 +78,9 @@ func (self *DepCheck) getGofiles() []*GoPkg {
 			goPkg.config.parse(self.goPath + "src/" + pkg + "/Gofile")
 			goPkgs[i] = goPkg
 		} else {
-			fmt.Printf("Did not find a Gofile for: %s\n", pkg)
+			if !self.q {
+				fmt.Printf("Did not find a Gofile for: %s\n", pkg)
+			}
 		}
 	}
 	return self.shrink(goPkgs)

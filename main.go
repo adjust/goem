@@ -30,7 +30,7 @@ func main() {
 			v.(func())()
 			os.Exit(0)
 		} else if k == action && action == "bundle" {
-			v.(func())()
+			v.(func(string))(subOption)
 			os.Exit(0)
 		} else if k == action && action == "build" {
 			v.(func(string))(subOption)

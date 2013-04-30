@@ -20,11 +20,11 @@ func List() {
 // Bundle() is supposed to get all packages specified in the Gofile
 // if the package is already installed Bundle() will update the git repo of the package
 // afterwards it will set the head of the package according to the Gofile entry
-func Bundle() {
+func Bundle(subOption string) {
 	config := NewConfig()
 	bundler := NewBundler(config)
 	bundler.bundle()
-	dep := NewDepCheck(config)
+	dep := NewDepCheck(config, subOption)
 	dep.Start()
 	config = NewLockConfig()
 	bundler = NewBundler(config)
