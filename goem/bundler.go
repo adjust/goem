@@ -57,7 +57,7 @@ func (self *Bundler) build(binName string) {
 	}
 
 	cmd := exec.Command(
-		"/usr/bin/go",
+		"go",
 		"build",
 		"-o",
 		binName,
