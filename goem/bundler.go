@@ -29,6 +29,7 @@ func NewBundler(config *Config) *Bundler {
 // bundle() exits on error
 func (self *Bundler) bundle() {
 	err := self.makeBase()
+	found := false
 	if err != nil {
 		fmt.Printf("the following error occured while bundling\n")
 		fmt.Printf("\n%s\n", err.Error())
@@ -37,7 +38,17 @@ func (self *Bundler) bundle() {
 	for _, env := range self.config.Env {
 		if getGoEnv() == env.Name {
 			self.getPackages(env.Packages)
+			found = true
 			break
+		}
+	}
+	if !found {
+		for _, env := range self.config.Env {
+			if "development" == env.Name {
+				self.getPackages(env.Packages)
+				found = true
+				break
+			}
 		}
 	}
 }
