@@ -62,6 +62,9 @@ func (self *Bundler) build(binName string) {
 		binName = "a.out"
 	}
 
+	binName = strings.TrimSpace(binName)
+	binName = strings.Replace(binName, "\n", "", -1)
+
 	sourceFiles, err := self.getSourceFiles()
 	if err != nil {
 		fmt.Printf("while trying to collect source files: " + err.Error())
