@@ -10,7 +10,7 @@ func test(config *Config) bool {
 	setGoPath()
 	os.Chdir(config.Testdir)
 	cmd := exec.Command(
-		"/usr/bin/go",
+		"go",
 		"test",
 	)
 	out, err := cmd.CombinedOutput()
@@ -18,7 +18,7 @@ func test(config *Config) bool {
 		fmt.Printf("%s %s\n", out, err.Error())
 	}
 	cmd = exec.Command(
-		"/usr/bin/go",
+		"go",
 		"test",
 	)
 	out, err = cmd.CombinedOutput()
