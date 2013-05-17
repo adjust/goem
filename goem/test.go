@@ -16,14 +16,6 @@ func test(config *Config) bool {
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Printf("%s %s\n", out, err.Error())
-	}
-	cmd = exec.Command(
-		"go",
-		"test",
-	)
-	out, err = cmd.CombinedOutput()
-	if err != nil {
-		fmt.Printf("%s %s\n", out, err.Error())
 		return false
 	} else {
 		fmt.Printf("%s\n", out)
