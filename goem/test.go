@@ -11,18 +11,10 @@ func test(config *Config) bool {
 	Bundle("q")
 	os.Chdir(config.Testdir)
 	cmd := exec.Command(
-		"/usr/bin/go",
+		"go",
 		"test",
 	)
 	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Printf("%s %s\n", out, err.Error())
-	}
-	cmd = exec.Command(
-		"/usr/bin/go",
-		"test",
-	)
-	out, err = cmd.CombinedOutput()
 	if err != nil {
 		fmt.Printf("%s %s\n", out, err.Error())
 		return false
