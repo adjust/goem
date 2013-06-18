@@ -8,6 +8,7 @@ import (
 
 func test(config *Config) bool {
 	setGoPath()
+	Bundle("q")
 	os.Chdir(config.Testdir)
 	cmd := exec.Command(
 		"/usr/bin/go",
