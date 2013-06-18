@@ -8,7 +8,9 @@ import (
 
 func test(config *Config) bool {
 	setGoPath()
+	fmt.Println("going to bundle")
 	Bundle("q")
+	fmt.Println("bundled")
 	os.Chdir(config.Testdir)
 	cmd := exec.Command(
 		"go",
