@@ -69,13 +69,15 @@ func (self *Bundler) build(binName string) {
 	if err != nil {
 		fmt.Printf("while trying to collect source files: " + err.Error())
 	}
+	myArgs := []string{}
+	myArgs = append(myArgs, "build")
+	myArgs = append(myArgs, "-o")
+	myArgs = append(myArgs, binName)
+	myArgs = append(myArgs, sourceFiles...)
 
 	cmd := exec.Command(
 		"go",
-		"build",
-		"-o",
-		binName,
-		sourceFiles,
+		myArgs...,
 	)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -213,22 +215,22 @@ func (self *Bundler) setHead(pkg Package) error {
 // getSourceFiles() is called by build() method
 // it collects all .go files in the current working dir and returns them as a string
 // on error it returns the error
-func (self *Bundler) getSourceFiles() (string, error) {
+func (self *Bundler) getSourceFiles() ([]string, error) {
 	cwd, err := os.Getwd()
-	var glob string
+	var glob []string
 	if err != nil {
-		return "", fmt.Errorf("while trying to get working dir: " + err.Error())
+		return nil, fmt.Errorf("while trying to get working dir: " + err.Error())
 	}
 	sourceFiles, err := filepath.Glob(cwd + "/*\\.go")
 	if err != nil {
-		return "", fmt.Errorf("while trying to get glob filepath: " + err.Error())
+		return nil, fmt.Errorf("while trying to get glob filepath: " + err.Error())
 	}
 	regex := regexp.MustCompile("^\\.go")
 	for _, file := range sourceFiles {
 		base := path.Base(file)
 		if !regex.MatchString(base) {
-			glob += base + " "
+			glob = append(glob, base)
 		}
 	}
-	return strings.TrimSpace(glob), nil
+	return glob, nil
 }
