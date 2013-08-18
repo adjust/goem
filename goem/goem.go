@@ -39,9 +39,9 @@ func Build(binName string) {
 	bundler.build(binName)
 }
 
-func Test() {
+func Test(testDir string) {
 	config := NewConfig()
-	if !test(config) {
+	if !test(config, testDir) {
 		os.Exit(1)
 	}
 }
