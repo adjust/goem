@@ -6,9 +6,14 @@ import (
 	"os/exec"
 )
 
-func test(config *Config) bool {
+func test(config *Config, testDir string) bool {
 	setGoPath()
-	os.Chdir(config.Testdir)
+
+	if testDir == "" {
+		testDir = config.Testdir
+	}
+	os.Chdir(testDir)
+
 	cmd := exec.Command(
 		"go",
 		"test",

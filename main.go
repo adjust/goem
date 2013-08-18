@@ -4,6 +4,7 @@ import (
 	"./goem"
 	"log"
 	"os"
+	"strings"
 )
 
 var actions = map[string]interface{}{
@@ -25,6 +26,7 @@ func main() {
 			subOption += arg + " "
 		}
 	}
+	subOption = strings.TrimSpace(subOption)
 	for k, v := range actions {
 		if k == action && action == "list" {
 			v.(func())()
@@ -36,7 +38,7 @@ func main() {
 			v.(func(string))(subOption)
 			os.Exit(0)
 		} else if k == action && action == "test" {
-			v.(func())()
+			v.(func(string))(subOption)
 			os.Exit(0)
 		} else if k == action && action == "help" {
 			v.(func(string))(subOption)
