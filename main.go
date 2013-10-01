@@ -16,8 +16,15 @@ var actions = map[string]interface{}{
 }
 
 func main() {
+
+	// Running goem without action, show help.
+	if len(os.Args) <= 1 {
+		goem.Help("")
+		os.Exit(0)
+	}
+
+	// Generate options from all extra command line parameters after 0 and 1.
 	var subOption string
-	action := os.Args[1]
 	if len(os.Args) > 2 {
 		for iter, arg := range os.Args {
 			if iter == 0 || iter == 1 {
@@ -27,6 +34,8 @@ func main() {
 		}
 	}
 	subOption = strings.TrimSpace(subOption)
+
+	action := os.Args[1]
 	for k, v := range actions {
 		if k == action && action == "list" {
 			v.(func())()
@@ -45,6 +54,7 @@ func main() {
 			os.Exit(0)
 		}
 	}
+
 	goem.Help("")
 	log.Println("unknown action")
 }
