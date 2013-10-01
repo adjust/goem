@@ -36,6 +36,26 @@ func (self *Lister) list() {
 	}
 }
 
+func goemIsDir(path string) bool {
+	osFile, err := os.Open(path)
+	if err != nil {
+		fmt.Printf("while isDir() open: " + err.Error())
+		return false
+	}
+	defer osFile.Close()
+
+	statFile, err := osFile.Stat()
+	if err != nil {
+		fmt.Printf("while isDir() stat: " + err.Error())
+		return false
+	}
+
+	if statFile.Mode().IsDir() {
+		return true
+	}
+	return false
+}
+
 // dirRead crawls the current GOPATH and returns an array which holds all packages
 // if an error occurs it returns it, nil otherwise
 func (self *Lister) dirRead(called int, path string, result []string) ([]string, error) {
@@ -46,6 +66,7 @@ func (self *Lister) dirRead(called int, path string, result []string) ([]string,
 	if called == 4 {
 		return result, nil
 	}
+
 	dirGlob, err := filepath.Glob(path + "/*")
 	if err != nil {
 		return nil, fmt.Errorf("while calling Glob on %s: %s\n", path, err.Error())
@@ -55,7 +76,11 @@ func (self *Lister) dirRead(called int, path string, result []string) ([]string,
 	if err != nil {
 		return nil, fmt.Errorf("while trying to get current working dir: " + err.Error())
 	}
+
 	for _, dir := range dirGlob {
+		if ! goemIsDir(dir) {
+			continue
+		}
 		result, _ = self.dirRead(called, dir, result)
 		if called == 3 {
 			temp := make([]string, len(result)+1)
