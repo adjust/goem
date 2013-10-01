@@ -20,6 +20,7 @@ type Config struct {
 	Env        []Env
 	Srcdir     string
 	Testdir    string
+	Bindir     string
 	OsBinNames []OsBinName
 }
 
