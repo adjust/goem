@@ -18,6 +18,7 @@ type GoPkg struct {
 // third party packages
 type Config struct {
 	Env     []Env
+	Srcdir  string
 	Testdir string
 }
 
