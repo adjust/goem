@@ -273,7 +273,7 @@ func (self *DepCheck) writeGofileLock(deps map[string]string) {
 	}
 	env := Env{Name: getGoEnv(), Packages: packages}
 	content := []Env{env}
-	config := &Config{Env: content}
+	config := &Config{Env: content, Srcdir: self.config.Srcdir}
 	j, _ := json.MarshalIndent(config, "    ", "    ")
 	ioutil.WriteFile("./Gofile.lock", j, 0777)
 }
