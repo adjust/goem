@@ -1,30 +1,46 @@
 {
-    "env" : [
+    "env": [
         {
-            "name" : "development",
+            "name": "development",
             "packages": [
                 {
-                    "name" : "github.com/adeven/redis",
-                    "branch" : "master"
+                    "name": "github.com/adeven/redis",
+                    "branch": "master"
                 },
                 {
-                    "name" : "github.com/bmizerany/pq",
-                    "branch" : "master"
+                    "name": "github.com/bmizerany/pq",
+                    "branch": "master"
                 },
                 {
-                    "name" : "github.com/vmihailenco/bufio",
-                    "branch" : "master"
+                    "name": "github.com/vmihailenco/bufio",
+                    "branch": "master"
                 },
                 {
-                    "name" : "github.com/adeven/epf2sql",
-                    "branch" : "master"
+                    "name": "github.com/adeven/epf2sql",
+                    "branch": "master"
                 },
                 {
-                    "name" : "github.com/adeven/goenv",
-                    "branch" : "master"
+                    "name": "github.com/adeven/goenv",
+                    "branch": "master"
                 }
             ]
         }
     ],
-    "testdir": "/path/to/testdir"
+    "srcdir": "/path/to/go/source/files",
+    "testdir": "/path/to/go/test/files",
+    "bindir": "/path/to/binary/output/directory",
+    "osbinnames": [
+        {
+            "os": "windows",
+            "binname": "binary_file_name_on_windows.exe"
+        },
+        {
+            "os": "linux",
+            "binname": "binary_file_name_on_linix"
+        },
+        {
+            "os": "darwin",
+            "binname": "binary_file_name_on_mac"
+        }
+    ]
 }

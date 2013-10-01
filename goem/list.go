@@ -46,6 +46,7 @@ func (self *Lister) dirRead(called int, path string, result []string) ([]string,
 	if called == 4 {
 		return result, nil
 	}
+
 	dirGlob, err := filepath.Glob(path + "/*")
 	if err != nil {
 		return nil, fmt.Errorf("while calling Glob on %s: %s\n", path, err.Error())
@@ -55,7 +56,11 @@ func (self *Lister) dirRead(called int, path string, result []string) ([]string,
 	if err != nil {
 		return nil, fmt.Errorf("while trying to get current working dir: " + err.Error())
 	}
+
 	for _, dir := range dirGlob {
+		if ! IsPathDir(dir) {
+			continue
+		}
 		result, _ = self.dirRead(called, dir, result)
 		if called == 3 {
 			temp := make([]string, len(result)+1)
@@ -63,7 +68,8 @@ func (self *Lister) dirRead(called int, path string, result []string) ([]string,
 				temp[i] = v
 			}
 			result = temp
-			result[len(result)-1] = strings.Replace(dir, cwd+"/.go/src/", "", -1)
+			goSrcDir := filepath.FromSlash(cwd + "/.go/src/")
+			result[len(result)-1] = strings.Replace(dir, goSrcDir, "", -1)
 		}
 	}
 	return result, nil

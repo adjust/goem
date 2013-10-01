@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strings"
+	"runtime"
 )
 
 // bundler object is supposed to collect all necessary go third party modules
@@ -58,27 +58,43 @@ func (self *Bundler) bundle() {
 // or in the path given with the optional binary name
 func (self *Bundler) build(binName string) {
 	setGoPath()
+
+	// If binary name not specified, look binary name from configuration.
+	if binName == "" && len(self.config.OsBinNames) > 0 {
+		for _, name := range self.config.OsBinNames {
+			if runtime.GOOS == name.Os {
+				binName = name.BinName
+			}
+		}
+	}
+
+	// If binary name by OS not found, use default.
 	if binName == "" {
 		binName = "a.out"
 	}
 
+	// Clean up the binary name.
 	binName = strings.TrimSpace(binName)
 	binName = strings.Replace(binName, "\n", "", -1)
+
+	// Attach binary directory to form full binary path.
+	binPath := binName
+	if len(self.config.Bindir) > 0 {
+		binPath = self.config.Bindir + "/" + binName
+	}
 
 	sourceFiles, err := self.getSourceFiles()
 	if err != nil {
 		fmt.Printf("while trying to collect source files: " + err.Error())
 	}
-	myArgs := []string{}
-	myArgs = append(myArgs, "build")
-	myArgs = append(myArgs, "-o")
-	myArgs = append(myArgs, binName)
-	myArgs = append(myArgs, sourceFiles...)
 
-	cmd := exec.Command(
-		"go",
-		myArgs...,
-	)
+	goArgs := []string{}
+	goArgs = append(goArgs, "build")
+	goArgs = append(goArgs, "-o")
+	goArgs = append(goArgs, binPath)
+	goArgs = append(goArgs, sourceFiles...)
+
+	cmd := exec.Command("go", goArgs...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Printf("%s\n", out)
@@ -216,20 +232,15 @@ func (self *Bundler) setHead(pkg Package) error {
 // it collects all .go files in the current working dir and returns them as a string
 // on error it returns the error
 func (self *Bundler) getSourceFiles() ([]string, error) {
-	cwd, err := os.Getwd()
-	var glob []string
-	if err != nil {
-		return nil, fmt.Errorf("while trying to get working dir: " + err.Error())
-	}
-	sourceFiles, err := filepath.Glob(cwd + "/*\\.go")
+	sourceFiles, err := filepath.Glob(self.config.Srcdir + "/*\\.go")
 	if err != nil {
 		return nil, fmt.Errorf("while trying to get glob filepath: " + err.Error())
 	}
-	regex := regexp.MustCompile("^\\.go")
+
+	var glob []string
 	for _, file := range sourceFiles {
-		base := path.Base(file)
-		if !regex.MatchString(base) {
-			glob = append(glob, base)
+		if ! IsPathDir(file) {
+			glob = append(glob, file)
 		}
 	}
 	return glob, nil
