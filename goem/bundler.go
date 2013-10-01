@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -216,20 +215,15 @@ func (self *Bundler) setHead(pkg Package) error {
 // it collects all .go files in the current working dir and returns them as a string
 // on error it returns the error
 func (self *Bundler) getSourceFiles() ([]string, error) {
-	cwd, err := os.Getwd()
-	var glob []string
-	if err != nil {
-		return nil, fmt.Errorf("while trying to get working dir: " + err.Error())
-	}
-	sourceFiles, err := filepath.Glob(cwd + "/*\\.go")
+	sourceFiles, err := filepath.Glob(self.config.Srcdir + "/*\\.go")
 	if err != nil {
 		return nil, fmt.Errorf("while trying to get glob filepath: " + err.Error())
 	}
-	regex := regexp.MustCompile("^\\.go")
+
+	var glob []string
 	for _, file := range sourceFiles {
-		base := path.Base(file)
-		if !regex.MatchString(base) {
-			glob = append(glob, base)
+		if ! IsPathDir(file) {
+			glob = append(glob, file)
 		}
 	}
 	return glob, nil
