@@ -7,6 +7,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"runtime"
 )
 
 // bundler object is supposed to collect all necessary go third party modules
@@ -57,12 +58,30 @@ func (self *Bundler) bundle() {
 // or in the path given with the optional binary name
 func (self *Bundler) build(binName string) {
 	setGoPath()
+
+	// If binary name not specified, look binary name from configuration.
+	if binName == "" && len(self.config.OsBinNames) > 0 {
+		for _, name := range self.config.OsBinNames {
+			if runtime.GOOS == name.Os {
+				binName = name.BinName
+			}
+		}
+	}
+
+	// If binary name by OS not found, use default.
 	if binName == "" {
 		binName = "a.out"
 	}
 
+	// Clean up the binary name.
 	binName = strings.TrimSpace(binName)
 	binName = strings.Replace(binName, "\n", "", -1)
+
+	// Attach binary directory to form full binary path.
+	binPath := binName
+	if len(self.config.Bindir) > 0 {
+		binPath = self.config.Bindir + "/" + binName
+	}
 
 	sourceFiles, err := self.getSourceFiles()
 	if err != nil {
@@ -72,7 +91,7 @@ func (self *Bundler) build(binName string) {
 	goArgs := []string{}
 	goArgs = append(goArgs, "build")
 	goArgs = append(goArgs, "-o")
-	goArgs = append(goArgs, binName)
+	goArgs = append(goArgs, binPath)
 	goArgs = append(goArgs, sourceFiles...)
 
 	cmd := exec.Command("go", goArgs...)
