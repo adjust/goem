@@ -68,16 +68,14 @@ func (self *Bundler) build(binName string) {
 	if err != nil {
 		fmt.Printf("while trying to collect source files: " + err.Error())
 	}
-	myArgs := []string{}
-	myArgs = append(myArgs, "build")
-	myArgs = append(myArgs, "-o")
-	myArgs = append(myArgs, binName)
-	myArgs = append(myArgs, sourceFiles...)
 
-	cmd := exec.Command(
-		"go",
-		myArgs...,
-	)
+	goArgs := []string{}
+	goArgs = append(goArgs, "build")
+	goArgs = append(goArgs, "-o")
+	goArgs = append(goArgs, binName)
+	goArgs = append(goArgs, sourceFiles...)
+
+	cmd := exec.Command("go", goArgs...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Printf("%s\n", out)
