@@ -8,14 +8,14 @@ import (
 func IsPathDir(path string) bool {
 	osFile, err := os.Open(path)
 	if err != nil {
-		fmt.Printf("while isDir() open: " + err.Error())
+		fmt.Printf("while IsPathDir() open: " + err.Error())
 		return false
 	}
 	defer osFile.Close()
 
 	statFile, err := osFile.Stat()
 	if err != nil {
-		fmt.Printf("while isDir() stat: " + err.Error())
+		fmt.Printf("while IsPathDir() stat: " + err.Error())
 		return false
 	}
 
