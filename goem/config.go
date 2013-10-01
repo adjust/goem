@@ -17,14 +17,20 @@ type GoPkg struct {
 // config has an array of environments which have a name and an array of
 // third party packages
 type Config struct {
-	Env     []Env
-	Srcdir  string
-	Testdir string
+	Env        []Env
+	Srcdir     string
+	Testdir    string
+	OsBinNames []OsBinName
 }
 
 type Env struct {
 	Name     string
 	Packages []Package
+}
+
+type OsBinName struct {
+	Os      string
+	BinName string
 }
 
 // NewConfig() calls parse()
