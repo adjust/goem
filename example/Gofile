@@ -1,5 +1,5 @@
 {
-    "env" : [
+    "env": [
         {
             "name": "development",
             "packages": [
@@ -26,6 +26,17 @@
             ]
         }
     ],
-    "srcdir": "/path/to/go/source/files"
-    "testdir": "/path/to/go/test/files"
+    "srcdir": "/path/to/go/source/files",
+    "testdir": "/path/to/go/test/files",
+    "bindir": "/path/to/output/directory",
+    "osbinnames": [
+        {
+            "os": "windows",
+            "binname": "binary_file_name_on_windows.exe"
+        },
+        {
+            "os": "unix",
+            "binname": "binary_file_name_on_unix"
+        }
+    ]
 }
