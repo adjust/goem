@@ -28,15 +28,19 @@
     ],
     "srcdir": "/path/to/go/source/files",
     "testdir": "/path/to/go/test/files",
-    "bindir": "/path/to/output/directory",
+    "bindir": "/path/to/binary/output/directory",
     "osbinnames": [
         {
             "os": "windows",
             "binname": "binary_file_name_on_windows.exe"
         },
         {
-            "os": "unix",
-            "binname": "binary_file_name_on_unix"
+            "os": "linux",
+            "binname": "binary_file_name_on_linix"
+        },
+        {
+            "os": "darwin",
+            "binname": "binary_file_name_on_mac"
         }
     ]
 }
