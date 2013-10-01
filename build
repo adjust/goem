@@ -1,36 +1,38 @@
-#!/bin/bash
+#!/bin/bash -e
 
-echo "Building goem..."
+# Build directory, temporary.
+bDirName=_build
 
-# On Windows with MingW.
-if [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
-
-    if [ ! -d ./_build ]; then
-        mkdir ./_build
-        go build -o _build/goem.exe main.go
-
-        # Install goem to Go binary folder so it can be accessed from
-        # command line as it should at least be in PATH environmental variable.
-        cp ./_build/goem.exe $GOROOT/bin \
-            && echo "Installed goem.exe to ${GOROOT}bin."
-        rm -rf ./_build
-    else
-        echo "Aborting build, remove _build directory to continue."
-    fi
-
-else
-
-    # On other environments e.g. Linux, Mac
-
-    if [ ! -d ./_build ]; then
-        mkdir ./_build
-        go build -o _build/goem main.go
-        cp _build/goem /usr/local/bin \
-            && echo "Installed goem to /usr/local/bin."
-        rm -rf ./_build
-    else
-        echo "Aborting build, remove _build directory to continue."
-    fi
-
+# Check if temporary build directory already exists.
+# Abort as might already be building or may potentially overwrite something.
+if [ -d ./${bDirName} ]; then
+    echo "Abort build, remove ./${bDirName} directory to continue."
+    exit 1
 fi
 
+# Define installation directory (iDir) and binary name (bName).
+# Check Mac first as some OS X do not have expr.
+if [ "$(uname)" == "Darwin" ]; then
+    echo "Building goem for Mac..."
+    iDir=/usr/local/bin
+    bName=goem
+elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
+    echo "Building goem for Windows MingW..."
+    iDir=${GOROOT}bin
+    bName=goem.exe
+else
+    echo "Building goem..."
+    iDir=/usr/local/bin
+    bName=goem
+fi
+
+if [ ! -d ${iDir} ]; then
+    echo "Abort build, install directory not found ${iDir}."
+    exit 2
+fi
+
+mkdir ./${bDirName}
+go build -o ${bDirName}/${bName} main.go \
+    && cp ${bDirName}/${bName} ${iDir} \
+    && echo "Installed ${bName} to ${iDir}."
+rm -rf ./${bDirName}
