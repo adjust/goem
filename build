@@ -1,33 +1,39 @@
 #!/bin/bash -e
 
-# Build directory, temporary.
+# Temporary build directory.
 bDirName=_build
 
 # Check if temporary build directory already exists.
-# Abort as might already be building or may potentially overwrite something.
+# Abort if found as might already be building or 
+# may potentially overwrite something.
 if [ -d ./${bDirName} ]; then
     echo "Abort build, remove ./${bDirName} directory to continue."
     exit 1
 fi
 
 # Define installation directory (iDir) and binary name (bName).
-# Check Mac first as some OS X do not have expr.
+# Check Mac first as some OS X do not have expr-command.
 if [ "$(uname)" == "Darwin" ]; then
     echo "Building goem for Mac..."
     iDir=/usr/local/bin
     bName=goem
+elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ]; then
+    echo "Building goem for Windows using Cygwin..."
+    iDir=${GOROOT}bin
+    bName=goem.exe
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ]; then
-    echo "Building goem for Windows MingW..."
+    echo "Building goem for Windows using MingW..."
     iDir=${GOROOT}bin
     bName=goem.exe
 else
+    # For other environments, meaning most Unix-like systems.
     echo "Building goem..."
     iDir=/usr/local/bin
     bName=goem
 fi
 
 if [ ! -d ${iDir} ]; then
-    echo "Abort build, install directory not found ${iDir}."
+    echo "Abort build, install directory not found: ${iDir}."
     exit 2
 fi
 
