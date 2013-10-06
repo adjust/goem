@@ -1,7 +1,7 @@
 goem
 ====
 
-A detaied description can be found [here](http://big-elephants.com/2013-09/goem-the-missing-go-extension-manager/)
+A detailed description can be found [here](http://big-elephants.com/2013-09/goem-the-missing-go-extension-manager/)
 This article explains the capabilities of goem with a detailed example.
 
 # go extension manager
