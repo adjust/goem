@@ -135,13 +135,14 @@ func helpTest() {
             |
             |__main.go
 
-            In this case you need to add the 'testdir' key in your Gofile:
-                e.g.:
-                    {
-                        "testdir": "test_folder"
-                    }
+        In this case you need to add the 'testdir' key in your Gofile:
+            e.g.:
+                {
+                    "testdir": "test_folder"
+                }
 
-            Then run goem test
+        Then run goem test
+
         `,
 	)
 }
@@ -165,6 +166,7 @@ func helpHelp() {
             - goem help
                 Get additional help for the commands:
                 e.g. goem help list
+
         `,
 	)
 }
