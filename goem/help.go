@@ -28,7 +28,7 @@ func helpList() {
 
         List lists all packages currently installed in your local gopath.
 
-        `,
+`,
 	)
 }
 
@@ -85,7 +85,7 @@ func helpBundle() {
                Would create a symlink from project_name/projectname to
                project_name/.go/src/your_account/project_name
 
-        `,
+`,
 	)
 }
 
@@ -113,7 +113,7 @@ func helpBuild() {
 
         Absolute paths are also allowed.
 
-        `,
+`,
 	)
 }
 
@@ -143,7 +143,7 @@ func helpTest() {
 
         Then run goem test
 
-        `,
+`,
 	)
 }
 
@@ -167,6 +167,6 @@ func helpHelp() {
                 Get additional help for the commands:
                 e.g. goem help list
 
-        `,
+`,
 	)
 }
