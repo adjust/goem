@@ -85,7 +85,7 @@ func helpBundle() {
                Would create a symlink from project_name/projectname to
                project_name/.go/src/your_account/project_name
 
-		`,
+        `,
 	)
 }
 
