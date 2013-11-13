@@ -16,6 +16,12 @@ var actions = map[string]interface{}{
 }
 
 func main() {
+
+	if len(os.Args) == 1 {
+		goem.Help("")
+		os.Exit(0)
+	}
+
 	var subOption string
 	action := os.Args[1]
 	if len(os.Args) > 2 {
@@ -46,5 +52,5 @@ func main() {
 		}
 	}
 	goem.Help("")
-	log.Println("unknown action")
+	log.Println("Unknown goem command: " + action)
 }
