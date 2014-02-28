@@ -4,7 +4,7 @@
             "name" : "development",
             "packages": [
                 {
-                    "name" : "github.com/adeven/redis",
+                    "name" : "github.com/adjust/redis",
                     "branch" : "master"
                 },
                 {
@@ -16,11 +16,11 @@
                     "branch" : "master"
                 },
                 {
-                    "name" : "github.com/adeven/epf2sql",
+                    "name" : "github.com/adjust/epf2sql",
                     "branch" : "master"
                 },
                 {
-                    "name" : "github.com/adeven/goenv",
+                    "name" : "github.com/adjust/goenv",
                     "branch" : "master"
                 }
             ]

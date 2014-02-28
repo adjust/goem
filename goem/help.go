@@ -47,7 +47,7 @@ func helpBundle() {
                     "name" : "development",
                     "packages": [
                         {
-                            "name" : "github.com/adeven/goenv",
+                            "name" : "github.com/adjust/goenv",
                             "branch" : "<cd3a33acbec38335c00b4ae252274827893d4e5b"
                         }
                     ]
