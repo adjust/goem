@@ -63,7 +63,7 @@ func (self *Lister) dirRead(called int, path string, result []string) ([]string,
 				temp[i] = v
 			}
 			result = temp
-			goSrcDir := filepath.FromSlash(cwd+"/.go/src/")
+			goSrcDir := filepath.FromSlash(cwd + "/.go/src/")
 			result[len(result)-1] = strings.Replace(dir, goSrcDir, "", -1)
 		}
 	}

@@ -75,7 +75,7 @@ An example Gofile looks like that:
                     "name" : "development",
                     "packages": [
                         {
-                            "name" : "github.com/adeven/goenv",
+                            "name" : "github.com/adjust/goenv",
                             "branch" : "<cd3a33acbec38335c00b4ae252274827893d4e5b"
                         }
                     ]
@@ -194,8 +194,8 @@ Shows the avaiable commands.
 
 This Software is licensed under the MIT License.
 
-Copyright (c) 2012 adeven GmbH, 
-http://www.adeven.com
+Copyright (c) 2012 adjust GmbH,
+http://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
