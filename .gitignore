@@ -24,3 +24,5 @@ _testmain.go
 #local go folder
 
 .go
+
+.DS_Store
