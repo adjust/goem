@@ -61,7 +61,12 @@ func (self *Git) pull(pkg Package) error {
 	)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("Could not update source:\n\n%s\n"+err.Error(), out)
+		return fmt.Errorf(
+			"Could not update source:%s\n\n%s\n",
+			pkg.Name,
+			err.Error(),
+			out,
+		)
 	}
 
 	self.dirSwap(pkg, oldDir)
