@@ -62,7 +62,7 @@ func (self *Git) pull(pkg Package) error {
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf(
-			"Could not update source:%s\n\n%s\n",
+			"Could not update source:%s\n%s\n%s\n",
 			pkg.Name,
 			err.Error(),
 			out,
