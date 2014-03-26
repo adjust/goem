@@ -8,6 +8,7 @@ import (
 )
 
 var actions = map[string]interface{}{
+	"init":   goem.Init,
 	"list":   goem.List,
 	"bundle": goem.Bundle,
 	"build":  goem.Build,
@@ -34,7 +35,10 @@ func main() {
 	}
 	subOption = strings.TrimSpace(subOption)
 	for k, v := range actions {
-		if k == action && action == "list" {
+		if k == action && action == "init" {
+			v.(func())()
+			os.Exit(0)
+		} else if k == action && action == "list" {
 			v.(func())()
 			os.Exit(0)
 		} else if k == action && action == "bundle" {
