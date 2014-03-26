@@ -8,6 +8,8 @@ import (
 func Help(topic string) {
 	topic = strings.TrimSpace(topic)
 	switch topic {
+    case "init":
+        helpInit()
 	case "list":
 		helpList()
 	case "bundle":
@@ -19,6 +21,19 @@ func Help(topic string) {
 	default:
 		helpHelp()
 	}
+}
+
+func helpInit() {
+    fmt.Printf(
+        `
+        usage: goem init
+
+        Creates and initializes a new Gofile in current directory.
+
+        This command will not override already existing Gofile.
+
+`,
+    )
 }
 
 func helpList() {
@@ -155,6 +170,8 @@ func helpHelp() {
         All goem commands only work on the root of your go project.
         The root is the directory in which your Gofile is located.
         Following commands are avaiable:
+            - goem init
+                Initialize a new Gofile
             - goem list
                 List all bundled packages
             - goem build
