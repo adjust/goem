@@ -54,6 +54,28 @@ to build your binary called "binary_name".
 
 ## Supported Actions
 
+### Init
+
+* goem init
+
+Init creates and initializes a new Gofile in current working directory.
+
+A new Gofile looks like
+
+```json
+        {
+            "env": [
+                {
+                    "name": "development",
+                    "packages": []
+                }
+            ],
+            "testdir": "./test"
+        }
+```
+
+If Gofile already exists init will not override it.
+
 ### List
 
 * goem list

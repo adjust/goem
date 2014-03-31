@@ -11,6 +11,11 @@ var git Git
 // all these functions exit after being called
 // all goem functions only work in the root directory of the project
 
+func Init() {
+	InitConfig()
+	fmt.Printf("An empty Gofile has been created.\n")
+}
+
 // List() is supposed to list all go extensions installed is the current project
 func List() {
 	lister := NewList()
