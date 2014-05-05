@@ -12,10 +12,11 @@ import (
 type Git struct{}
 
 func (self *Git) clone(pkg Package) error {
+	gitUrl := strings.Replace(pkg.Name, "github.com", "github.com:", -1)
 	cmd := exec.Command(
 		"git",
 		"clone",
-		"git@github.com"+pkg.Name+".git",
+		"git@"+gitUrl+".git",
 		getGoPath()+"/src/"+pkg.Name,
 	)
 	out, err := cmd.CombinedOutput()
