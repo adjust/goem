@@ -17,13 +17,13 @@ type GoPkg struct {
 // config has an array of environments which have a name and an array of
 // third party packages
 type Config struct {
-	Env     []Env
-	Testdir string
+	Env     []Env  `json:"env"`
+	Testdir string `json:"testdir"`
 }
 
 type Env struct {
-	Name     string
-	Packages []Package
+	Name     string    `json:"name"`
+	Packages []Package `json:"packages"`
 }
 
 // NewConfig() calls parse()
@@ -39,6 +39,35 @@ func NewConfig() *Config {
 func NewLockConfig() *Config {
 	config := &Config{}
 	config.parse("Gofile.lock")
+	return config
+}
+
+func InitConfig() (*Config) {
+	gofile := "./Gofile"
+
+	dev_env := Env{"development", []Package{}}
+	config := &Config{[]Env{dev_env}, "./test"}
+
+	f, err := os.OpenFile(gofile, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+	if os.IsExist(err) {
+		fmt.Printf("There is already a Gofile in current directory. Skipping.\n")
+		os.Exit(0)
+	} else if err != nil {
+		fmt.Printf("Failed to create Gofile: %s\n", err.Error())
+		os.Exit(1)
+	}
+	defer f.Close()
+
+	configData, err := json.MarshalIndent(config, "", "\t")
+	if err != nil {
+		fmt.Printf("Failed to write to Gofile: %s\n", err.Error())
+	}
+
+	_, err = f.Write(append(configData, '\n'))
+	if err != nil {
+		fmt.Printf("Failed to write to Gofile: %s\n", err.Error())
+	}
+
 	return config
 }
 
