@@ -15,7 +15,7 @@ func (self *Git) clone(pkg Package) error {
 	cmd := exec.Command(
 		"git",
 		"clone",
-		"https://"+pkg.Name+".git",
+		"git@github.com"+pkg.Name+".git",
 		getGoPath()+"/src/"+pkg.Name,
 	)
 	out, err := cmd.CombinedOutput()
