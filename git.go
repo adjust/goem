@@ -1,4 +1,4 @@
-package goem
+package main
 
 import (
 	"fmt"
@@ -10,6 +10,8 @@ import (
 )
 
 type Git struct{}
+
+var git Git
 
 func (self *Git) clone(pkg Package) error {
 	gitUrl := strings.Replace(pkg.Name, "github.com", "github.com:", -1)

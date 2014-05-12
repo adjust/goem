@@ -1,4 +1,4 @@
-package goem
+package main
 
 import (
 	"fmt"
@@ -7,26 +7,24 @@ import (
 	"strings"
 )
 
-// List is a struct that simply holds the current GOPATH
-type Lister struct {
-	srcPath string
+var srcPath string
+
+var cmdList = &Command{
+	Usage: "dummy",
+	Long:  "dummy",
+	Run:   list,
+	Name:  "list",
 }
 
-// NewList() returns a new ListObject
-// GOPATH is set to "./go/src/"
-// on error it exits
-func NewList() *Lister {
-	list := &Lister{
-		srcPath: getGoPath() + "/src/",
-	}
-	return list
+func init() {
+	srcPath = getGoPath() + "/src/"
 }
 
 // list() prints all installed go extensions to stdout
 // it does so by calling dirRead()
 // on error it prints it and exits
-func (self *Lister) list() {
-	results, err := self.dirRead(0, self.srcPath, nil)
+func list(args []string) {
+	results, err := dirRead(0, srcPath, nil)
 	if err != nil {
 		fmt.Printf("while dirRead(): " + err.Error())
 		os.Exit(1)
@@ -38,7 +36,7 @@ func (self *Lister) list() {
 
 // dirRead crawls the current GOPATH and returns an array which holds all packages
 // if an error occurs it returns it, nil otherwise
-func (self *Lister) dirRead(called int, path string, result []string) ([]string, error) {
+func dirRead(called int, path string, result []string) ([]string, error) {
 	if result == nil {
 		result = make([]string, 1)
 	}
@@ -56,7 +54,7 @@ func (self *Lister) dirRead(called int, path string, result []string) ([]string,
 		return nil, fmt.Errorf("while trying to get current working dir: " + err.Error())
 	}
 	for _, dir := range dirGlob {
-		result, _ = self.dirRead(called, dir, result)
+		result, _ = dirRead(called, dir, result)
 		if called == 3 {
 			temp := make([]string, len(result)+1)
 			for i, v := range result {

@@ -1,4 +1,4 @@
-package goem
+package main
 
 import (
 	"encoding/json"
@@ -7,18 +7,20 @@ import (
 	"os"
 )
 
-// GoPkg is a struct that relates Configs with there Package name
+var cmdInit = &Command{
+	Run:  InitConfig,
+	Name: "init",
+}
+
 type GoPkg struct {
 	name   string
 	config *Config
 }
 
-// Config is a struct that holds the information from the Gofile
-// config has an array of environments which have a name and an array of
-// third party packages
 type Config struct {
 	Env     []Env  `json:"env"`
 	Testdir string `json:"testdir"`
+	Mirror  string `json:"mirror"`
 }
 
 type Env struct {
@@ -26,27 +28,25 @@ type Env struct {
 	Packages []Package `json:"packages"`
 }
 
-// NewConfig() calls parse()
-// NewConfig() simply returns an initialized Config object
-func NewConfig() *Config {
-	config := &Config{}
+var config *Config
+
+func init() {
+	config = &Config{}
 	config.parse("")
-	return config
+	fmt.Println(config)
 }
 
-// NewLockConfig()
-// same as NewConfig(), but initializes with Gofile.lock
 func NewLockConfig() *Config {
 	config := &Config{}
 	config.parse("Gofile.lock")
 	return config
 }
 
-func InitConfig() (*Config) {
+func InitConfig(args []string) {
 	gofile := "./Gofile"
 
 	dev_env := Env{"development", []Package{}}
-	config := &Config{[]Env{dev_env}, "./test"}
+	config := &Config{[]Env{dev_env}, "./test", ""}
 
 	f, err := os.OpenFile(gofile, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
 	if os.IsExist(err) {
@@ -67,14 +67,8 @@ func InitConfig() (*Config) {
 	if err != nil {
 		fmt.Printf("Failed to write to Gofile: %s\n", err.Error())
 	}
-
-	return config
 }
 
-// parse() reads the Gofile, which is expected to be in the current
-// working dir. After reading the Gofile the content is unmarshaled into
-// the Config object
-// parse exits on error
 func (self *Config) parse(gofile string) {
 	if gofile == "" {
 		gofile = "./Gofile"

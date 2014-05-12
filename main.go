@@ -1,60 +1,42 @@
 package main
 
 import (
-	"./goem"
-	"log"
+	"fmt"
 	"os"
-	"strings"
 )
 
-var actions = map[string]interface{}{
-	"init":   goem.Init,
-	"list":   goem.List,
-	"bundle": goem.Bundle,
-	"build":  goem.Build,
-	"test":   goem.Test,
-	"help":   goem.Help,
+var commands = []*Command{
+	//cmdInit,
+	cmdList,
+	cmdBundle,
+	cmdBuild,
+	cmdTest,
+	cmdHelp,
+}
+
+func usage() {
+	fmt.Println("dummy")
 }
 
 func main() {
-
-	if len(os.Args) == 1 {
-		goem.Help("")
-		os.Exit(0)
+	args := os.Args[1:]
+	if len(args) < 1 {
+		usage()
 	}
 
-	var subOption string
-	action := os.Args[1]
-	if len(os.Args) > 2 {
-		for iter, arg := range os.Args {
-			if iter == 0 || iter == 1 {
-				continue
+	for _, cmd := range commands {
+		if cmd.Name == args[0] && cmd.Run != nil {
+			cmd.Flag.Usage = func() {
+				cmd.printUsage()
 			}
-			subOption += arg + " "
+			if err := cmd.Flag.Parse(args[1:]); err != nil {
+				os.Exit(1)
+			}
+			cmd.Run(cmd.Flag.Args())
+			return
 		}
 	}
-	subOption = strings.TrimSpace(subOption)
-	for k, v := range actions {
-		if k == action && action == "init" {
-			v.(func())()
-			os.Exit(0)
-		} else if k == action && action == "list" {
-			v.(func())()
-			os.Exit(0)
-		} else if k == action && action == "bundle" {
-			v.(func(string))(subOption)
-			os.Exit(0)
-		} else if k == action && action == "build" {
-			v.(func(string))(subOption)
-			os.Exit(0)
-		} else if k == action && action == "test" {
-			v.(func(string))(subOption)
-			os.Exit(0)
-		} else if k == action && action == "help" {
-			v.(func(string))(subOption)
-			os.Exit(0)
-		}
-	}
-	goem.Help("")
-	log.Println("Unknown goem command: " + action)
+
+	fmt.Fprintf(os.Stderr, "Unknown command: %s\n", args[0])
+	usage()
 }

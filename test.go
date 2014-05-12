@@ -1,4 +1,4 @@
-package goem
+package main
 
 import (
 	"fmt"
@@ -7,7 +7,13 @@ import (
 	"strings"
 )
 
-func test(config *Config, testDir string) bool {
+var cmdTest = &Command{
+	Run:  test,
+	Name: "test",
+}
+
+func test(args []string) {
+	testDir := config.Testdir
 	setGoPath()
 	buildPackages := false
 
@@ -27,18 +33,18 @@ func test(config *Config, testDir string) bool {
 		testCommand = "-i"
 	}
 
-	cmd := exec.Command(
+	execTest := exec.Command(
 		"go",
 		"test",
 		testCommand,
 	)
 
-	out, err := cmd.CombinedOutput()
+	out, err := execTest.CombinedOutput()
 	if err != nil {
 		fmt.Printf("%s %s\n", out, err.Error())
-		return false
+		os.Exit(1)
 	} else {
 		fmt.Printf("%s\n", out)
 	}
-	return true
+	os.Exit(0)
 }

@@ -1,15 +1,28 @@
-package goem
+package main
 
 import (
 	"fmt"
 	"strings"
 )
 
-func Help(topic string) {
-	topic = strings.TrimSpace(topic)
-	switch topic {
-    case "init":
-        helpInit()
+var cmdHelp = &Command{
+	Usage: "help blah",
+	Long:  "blah keys",
+	Name:  "help",
+}
+
+func init() {
+	cmdHelp.Run = Help
+}
+
+func Help(args []string) {
+	if len(args) == 0 {
+		helpHelp()
+		return
+	}
+	switch strings.TrimSpace(args[0]) {
+	case "init":
+		helpInit()
 	case "list":
 		helpList()
 	case "bundle":
@@ -24,8 +37,8 @@ func Help(topic string) {
 }
 
 func helpInit() {
-    fmt.Printf(
-        `
+	fmt.Printf(
+		`
         usage: goem init
 
         Creates and initializes a new Gofile in current directory.
@@ -33,7 +46,7 @@ func helpInit() {
         This command will not override already existing Gofile.
 
 `,
-    )
+	)
 }
 
 func helpList() {

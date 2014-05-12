@@ -1,4 +1,4 @@
-package goem
+package main
 
 // Package is a struct to hold a repository name and the desired branch
 // Config holds an array of Packages

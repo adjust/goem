@@ -1,4 +1,4 @@
-package goem
+package main
 
 import (
 	"encoding/json"
@@ -15,7 +15,6 @@ type DepCheck struct {
 	// the GOPATH environment var
 	goPath string
 	// a goem Lister Object to resolve the dependencies
-	list *Lister
 	// the config this package
 	config *Config
 	//quiet flag
@@ -30,7 +29,6 @@ func NewDepCheck(config *Config, subOption string) *DepCheck {
 	}
 	return &DepCheck{
 		goPath: getGoPath(),
-		list:   NewList(),
 		config: config,
 		q:      q,
 	}
@@ -60,7 +58,7 @@ func (self *DepCheck) Start() {
 //   3. return a list of installed packages with corresponding configs
 // on error it exits with 1
 func (self *DepCheck) getGofiles() []*GoPkg {
-	packages, err := self.list.dirRead(0, self.goPath+"/src", nil)
+	packages, err := dirRead(0, self.goPath+"/src", nil)
 	if err != nil {
 		fmt.Printf("Something went wrong: %s", err.Error())
 		os.Exit(1)
