@@ -4,7 +4,7 @@
 bDirName=_build
 
 # Check if temporary build directory already exists.
-# Abort if found as might already be building or 
+# Abort if found as might already be building or
 # may potentially overwrite something.
 if [ -d ./${bDirName} ]; then
     echo "Abort build, remove ./${bDirName} directory to continue."
@@ -38,7 +38,7 @@ if [ ! -d ${iDir} ]; then
 fi
 
 mkdir ./${bDirName}
-go build -o ${bDirName}/${bName} main.go \
+go build -o ${bDirName}/${bName} \
     && cp ${bDirName}/${bName} ${iDir} \
     && echo "Installed ${bName} to ${iDir}."
 rm -rf ./${bDirName}
