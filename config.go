@@ -12,11 +12,6 @@ var cmdInit = &Command{
 	Name: "init",
 }
 
-type GoPkg struct {
-	name   string
-	config *Config
-}
-
 type Config struct {
 	Env     []Env  `json:"env"`
 	Testdir string `json:"testdir"`

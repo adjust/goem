@@ -10,6 +10,11 @@ import (
 
 var quiet bool
 
+type GoPkg struct {
+	name   string
+	config *Config
+}
+
 func ResolveDeps(args []string) {
 	if len(args) > 0 && args[0][0] == 'q' {
 		quiet = true
@@ -230,6 +235,12 @@ func writeGofileLock(deps map[string]string) {
 	env := Env{Name: getGoEnv(), Packages: packages}
 	content := []Env{env}
 	config := &Config{Env: content}
-	j, _ := json.MarshalIndent(config, "    ", "    ")
-	ioutil.WriteFile("./Gofile.lock", j, 0777)
+	j, err := json.MarshalIndent(config, "", "\t")
+	if err != nil {
+		stderrAndExit(err)
+	}
+	err = ioutil.WriteFile("./Gofile.lock", j, 0777)
+	if err != nil {
+		stderrAndExit(err)
+	}
 }
