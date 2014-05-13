@@ -11,22 +11,18 @@ import (
 )
 
 var cmdBundle = &Command{
-	Run:  bundle,
+	Run:  Bundle,
 	Name: "bundle",
 }
 
-var cmdBuild = &Command{
-	Run:  build,
-	Name: "build",
+func Bundle(args []string) {
+	bundle(args)
+	dep := NewDepCheck(config, args[0])
+	dep.Start()
+	config = NewLockConfig()
+	bundle(args)
 }
 
-// bundler object is supposed to collect all necessary go third party modules
-type Bundler struct {
-	config *Config
-}
-
-// bundle() executes all necessary sub methods to fetch or update the current source
-// bundle() exits on error
 func bundle(args []string) {
 	err := makeBase()
 	found := false
@@ -53,42 +49,6 @@ func bundle(args []string) {
 	}
 }
 
-// build() calls bundle() to ensure updated source()
-// build() builds either an a.out binary in the current working dir
-// or in the path given with the optional binary name
-func build(args []string) {
-	binName := args[0]
-	setGoPath()
-	if binName == "" {
-		binName = "a.out"
-	}
-
-	binName = strings.TrimSpace(binName)
-	binName = strings.Replace(binName, "\n", "", -1)
-
-	sourceFiles, err := getSourceFiles()
-	if err != nil {
-		fmt.Printf("while trying to collect source files: " + err.Error())
-	}
-	myArgs := []string{}
-	myArgs = append(myArgs, "build")
-	myArgs = append(myArgs, "-o")
-	myArgs = append(myArgs, binName)
-	myArgs = append(myArgs, sourceFiles...)
-
-	execBuild := exec.Command(
-		"go",
-		myArgs...,
-	)
-	out, err := execBuild.CombinedOutput()
-	if err != nil {
-		fmt.Printf("%s\n", out)
-	}
-}
-
-// makeBase() creates the .go dir and all necessary subdirectories
-// makeBase() is called by bundle() to ensure all needed directories exist
-// on error makeBase() returns it
 func makeBase() error {
 	goDirs := [3]string{"/src", "/pkg", "/bin"}
 	for _, ext := range goDirs {
@@ -211,27 +171,4 @@ func setHead(pkg Package) error {
 		os.Exit(1)
 	}
 	return nil
-}
-
-// getSourceFiles() is called by build() method
-// it collects all .go files in the current working dir and returns them as a string
-// on error it returns the error
-func getSourceFiles() ([]string, error) {
-	cwd, err := os.Getwd()
-	var glob []string
-	if err != nil {
-		return nil, fmt.Errorf("while trying to get working dir: " + err.Error())
-	}
-	sourceFiles, err := filepath.Glob(cwd + "/*\\.go")
-	if err != nil {
-		return nil, fmt.Errorf("while trying to get glob filepath: " + err.Error())
-	}
-	regex := regexp.MustCompile("^\\.go")
-	for _, file := range sourceFiles {
-		base := path.Base(file)
-		if !regex.MatchString(base) {
-			glob = append(glob, base)
-		}
-	}
-	return glob, nil
 }

@@ -33,7 +33,6 @@ var config *Config
 func init() {
 	config = &Config{}
 	config.parse("")
-	fmt.Println(config)
 }
 
 func NewLockConfig() *Config {
