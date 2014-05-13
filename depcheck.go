@@ -1,10 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"sort"
 )
 
@@ -75,13 +72,6 @@ func shrink(configs []*GoPkg) []*GoPkg {
 	}
 	newConfigs[index] = &GoPkg{name: "this", config: config}
 	return newConfigs
-}
-
-func fileExists(path string) bool {
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return false
-	}
-	return true
 }
 
 func checkDeps(goPkgs []*GoPkg, pkgMap map[string]string) map[string]string {
@@ -235,12 +225,5 @@ func writeGofileLock(deps map[string]string) {
 	env := Env{Name: getGoEnv(), Packages: packages}
 	content := []Env{env}
 	config := &Config{Env: content}
-	j, err := json.MarshalIndent(config, "", "\t")
-	if err != nil {
-		stderrAndExit(err)
-	}
-	err = ioutil.WriteFile("./Gofile.lock", j, 0777)
-	if err != nil {
-		stderrAndExit(err)
-	}
+	config.write("./Gofile.lock")
 }

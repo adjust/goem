@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
 )
 
 var cmdInit = &Command{
@@ -27,27 +26,12 @@ var config *Config = &Config{}
 
 func InitConfig(args []string) {
 	gofile := "./Gofile"
-
+	if fileExists(gofile) {
+		stderrAndExit(fmt.Errorf("Gofile already exists"))
+	}
 	dev_env := Env{"development", []Package{}}
 	config := &Config{[]Env{dev_env}, "./test", ""}
-
-	f, err := os.OpenFile(gofile, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
-	if os.IsExist(err) {
-		stderrAndExit(fmt.Errorf("There is already a Gofile in current directory. Skipping."))
-	} else if err != nil {
-		stderrAndExit(fmt.Errorf("Failed to create Gofile: " + err.Error()))
-	}
-	defer f.Close()
-
-	configData, err := json.MarshalIndent(config, "", "\t")
-	if err != nil {
-		fmt.Printf("Failed to write to Gofile: %s\n", err.Error())
-	}
-
-	_, err = f.Write(append(configData, '\n'))
-	if err != nil {
-		fmt.Printf("Failed to write to Gofile: %s\n", err.Error())
-	}
+	config.write("./Gofile")
 }
 
 func (self *Config) parse(gofile string) {
@@ -59,6 +43,17 @@ func (self *Config) parse(gofile string) {
 		stderrAndExit(err)
 	}
 	err = json.Unmarshal(configData, self)
+	if err != nil {
+		stderrAndExit(err)
+	}
+}
+
+func (self *Config) write(gofile string) {
+	j, err := json.MarshalIndent(self, "", "\t")
+	if err != nil {
+		stderrAndExit(err)
+	}
+	err = ioutil.WriteFile(gofile, j, 0777)
 	if err != nil {
 		stderrAndExit(err)
 	}

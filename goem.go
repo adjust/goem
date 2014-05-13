@@ -16,8 +16,7 @@ func getGoEnv() string {
 func getGoPath() string {
 	goPath, err := os.Getwd()
 	if err != nil {
-		fmt.Printf("Could not construct Bundler Object: %s\n", err.Error())
-		os.Exit(1)
+		stderrAndExit(err)
 	} else {
 		goPath += "/.go/"
 	}
@@ -27,7 +26,7 @@ func getGoPath() string {
 func setGoPath() {
 	cwd, err := os.Getwd()
 	if err != nil {
-		fmt.Printf("while trying to get working dir: " + err.Error())
+		stderrAndExit(err)
 	}
 
 	os.Setenv("GOPATH", cwd+"/.go")
@@ -36,4 +35,11 @@ func setGoPath() {
 func stderrAndExit(err error) {
 	fmt.Fprintln(os.Stderr, err.Error())
 	os.Exit(1)
+}
+
+func fileExists(path string) bool {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return false
+	}
+	return true
 }
