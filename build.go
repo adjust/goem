@@ -1,8 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
+	"path"
+	"path/filepath"
+	"regexp"
+	"strings"
 )
 
 var cmdBuild = &Command{

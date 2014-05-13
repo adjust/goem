@@ -3,11 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path"
-	"path/filepath"
-	"regexp"
-	"strings"
 )
 
 var cmdBundle = &Command{
@@ -66,7 +62,7 @@ func makeBase() error {
 // on error getPackages exits
 func getPackages(packages []Package) {
 	for _, pkg := range packages {
-		if checkForPath(pkg.Branch) {
+		if pkg.BranchIsPath() {
 			name, err := os.Getwd()
 			if err != nil {
 				fmt.Printf(err.Error())
@@ -100,7 +96,7 @@ func getPackages(packages []Package) {
 			}
 			continue
 		}
-		if !sourceExist(pkg) {
+		if !pkg.SourceExist() {
 			err := getSource(pkg)
 			if err != nil {
 				fmt.Printf("while trying to get the source files: %s\n\n", err.Error())
@@ -117,27 +113,6 @@ func getPackages(packages []Package) {
 	}
 }
 
-// checkForPath
-func checkForPath(path string) bool {
-	if path[0] == '/' || path[0] == '.' {
-		return true
-	}
-	return false
-}
-
-// sourceExist simpy checks if the source directory already exists
-// it returns true if so, false otherwise
-func sourceExist(pkg Package) bool {
-	dir := getGoPath() + "/src/" + pkg.Name
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		return false
-	}
-	return true
-}
-
-// getSource() downloads the given package via https from github
-// on error it tries to remove created dirs and reports on failure to do so
-// also it returns the failure
 func getSource(pkg Package) error {
 	err := git.clone(pkg)
 	if err != nil {
