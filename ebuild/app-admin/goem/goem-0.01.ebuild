@@ -16,6 +16,7 @@ DEPEND="dev-lang/go"
 RDEPEND="${DEPEND}"
 
 EGIT_REPO_URI="https://github.com/adjust/goem.git"
+EGIT_BRANCH="9e5d04afc482c114b2a914e3571e6811fc03d5c8"
 
 src_compile() {
 	mkdir "${PORTAGE_BUILDDIR}/work/goem-0.01/build_dir"
