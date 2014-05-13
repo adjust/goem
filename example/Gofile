@@ -16,10 +16,6 @@
                     "branch" : "master"
                 },
                 {
-                    "name" : "github.com/adjust/epf2sql",
-                    "branch" : "master"
-                },
-                {
                     "name" : "github.com/adjust/goenv",
                     "branch" : "master"
                 }
