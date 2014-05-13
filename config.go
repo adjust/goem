@@ -38,11 +38,9 @@ func InitConfig(args []string) {
 
 	f, err := os.OpenFile(gofile, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
 	if os.IsExist(err) {
-		fmt.Printf("There is already a Gofile in current directory. Skipping.\n")
-		os.Exit(0)
+		stderrAndExit(fmt.Errorf("There is already a Gofile in current directory. Skipping."))
 	} else if err != nil {
-		fmt.Printf("Failed to create Gofile: %s\n", err.Error())
-		os.Exit(1)
+		stderrAndExit(fmt.Errorf("Failed to create Gofile: " + err.Error()))
 	}
 	defer f.Close()
 
@@ -63,12 +61,10 @@ func (self *Config) parse(gofile string) {
 	}
 	configData, err := ioutil.ReadFile(gofile)
 	if err != nil {
-		fmt.Printf("while trying to read Gofile: " + err.Error())
-		os.Exit(1)
+		stderrAndExit(err)
 	}
 	err = json.Unmarshal(configData, self)
 	if err != nil {
-		fmt.Printf("while trying to unmarshal Gofile: " + err.Error())
-		os.Exit(1)
+		stderrAndExit(err)
 	}
 }

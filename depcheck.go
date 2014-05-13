@@ -8,84 +8,52 @@ import (
 	"sort"
 )
 
-// DepCheck object is used to determine recursive dependencies
-// it tries to combine all dependencies of the dependencies into
-// Gofile lock for the given environment
-type DepCheck struct {
-	// the GOPATH environment var
-	goPath string
-	// a goem Lister Object to resolve the dependencies
-	// the config this package
-	config *Config
-	//quiet flag
-	q bool
-}
+var quiet bool
 
-// Constructor that sets the defaults
-func NewDepCheck(config *Config, args []string) *DepCheck {
-	q := false
+func ResolveDeps(args []string) {
 	if len(args) > 0 && args[0][0] == 'q' {
-		q = true
+		quiet = true
 	}
-	return &DepCheck{
-		goPath: getGoPath(),
-		config: config,
-		q:      q,
-	}
-}
-
-// Start() does the following steps:
-//   1. get the gofiles of the dependencies
-//   2. parse the gofiles and determine dependencies
-//   3. write these dependencies to Gofile.lock
-func (self *DepCheck) Start() {
 	pkgMap := map[string]string{}
 	for {
 		before := len(pkgMap)
-		subConfigs := self.getGofiles()
-		self.checkDeps(subConfigs, pkgMap)
+		subConfigs := getGofiles()
+		checkDeps(subConfigs, pkgMap)
 		after := len(pkgMap)
 		if before == after {
 			break
 		}
 	}
-	self.writeGofileLock(pkgMap)
+	writeGofileLock(pkgMap)
 }
 
-// getGoFiles() does the following steps
-//   1. get all installed packages with the lister object
-//   2. check if a Gofile for this package exists
-//   3. return a list of installed packages with corresponding configs
-// on error it exits with 1
-func (self *DepCheck) getGofiles() []*GoPkg {
-	packages, err := dirRead(0, self.goPath+"/src", nil)
+func getGofiles() []*GoPkg {
+	packages, err := dirRead(0, getGoPath()+"/src", nil)
 	if err != nil {
-		fmt.Printf("Something went wrong: %s", err.Error())
-		os.Exit(1)
+		stderrAndExit(err)
 	}
 	goPkgs := make([]*GoPkg, len(packages))
 	for i, pkg := range packages {
 		if pkg == "" {
 			continue
 		}
-		if self.fileExists(self.goPath + "src/" + pkg + "/Gofile") {
+		if fileExists(getGoPath() + "src/" + pkg + "/Gofile") {
 			goPkg := &GoPkg{
 				name:   pkg,
 				config: &Config{},
 			}
-			goPkg.config.parse(self.goPath + "src/" + pkg + "/Gofile")
+			goPkg.config.parse(getGoPath() + "src/" + pkg + "/Gofile")
 			goPkgs[i] = goPkg
 		} else {
-			if !self.q {
+			if !quiet {
 				fmt.Printf("Did not find a Gofile for: %s\n", pkg)
 			}
 		}
 	}
-	return self.shrink(goPkgs)
+	return shrink(goPkgs)
 }
 
-// shrink() removes empty entries from an array of GoPkg
-func (self *DepCheck) shrink(configs []*GoPkg) []*GoPkg {
+func shrink(configs []*GoPkg) []*GoPkg {
 	realLen := 0
 	for _, config := range configs {
 		if config != nil {
@@ -100,39 +68,33 @@ func (self *DepCheck) shrink(configs []*GoPkg) []*GoPkg {
 			index++
 		}
 	}
-	newConfigs[index] = &GoPkg{name: "this", config: self.config}
+	newConfigs[index] = &GoPkg{name: "this", config: config}
 	return newConfigs
 }
 
-// fileExists() checks if the given file exists
-func (self *DepCheck) fileExists(path string) bool {
+func fileExists(path string) bool {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return false
 	}
 	return true
 }
 
-// checkDeps calls checkDeep() for all Packages with a Gofile to find conflicts
-// and all dependencies
-func (self *DepCheck) checkDeps(goPkgs []*GoPkg, pkgMap map[string]string) map[string]string {
+func checkDeps(goPkgs []*GoPkg, pkgMap map[string]string) map[string]string {
 	for _, goPkg := range goPkgs {
-		self.checkDeep(goPkg, goPkgs, pkgMap)
+		checkDeep(goPkg, goPkgs, pkgMap)
 	}
 	return pkgMap
 }
 
-// checkDeep() iterates over all installed Packages and compares them with
-// the other installed packages
-func (self *DepCheck) checkDeep(goPkg *GoPkg, goPkgs []*GoPkg, pkgMap map[string]string) {
+func checkDeep(goPkg *GoPkg, goPkgs []*GoPkg, pkgMap map[string]string) {
 	for _, otherGoPkg := range goPkgs {
-		otherPkgs := self.getPkgForEnv(otherGoPkg)
-		pkgs := self.getPkgForEnv(goPkg)
-		self.cmpPkgList(pkgs, otherPkgs, goPkg, otherGoPkg, pkgMap)
+		otherPkgs := getPkgForEnv(otherGoPkg)
+		pkgs := getPkgForEnv(goPkg)
+		cmpPkgList(pkgs, otherPkgs, goPkg, otherGoPkg, pkgMap)
 	}
 }
 
-// getPkgForEnv returnes a list of all packages for the given environment
-func (self *DepCheck) getPkgForEnv(goPkg *GoPkg) []Package {
+func getPkgForEnv(goPkg *GoPkg) []Package {
 	if len(goPkg.config.Env) == 1 {
 		goPkg.config.Env[0].Name = getGoEnv()
 	}
@@ -144,10 +106,7 @@ func (self *DepCheck) getPkgForEnv(goPkg *GoPkg) []Package {
 	return nil
 }
 
-// cmpPkgList compares the dependencies of 2 packages
-// it prints errors, which it cannot resolve to the console
-// it changes the given pkgMap to save its results
-func (self *DepCheck) cmpPkgList(pkgList, otherPkgList []Package, goPkg, otherGoPkg *GoPkg, pkgMap map[string]string) {
+func cmpPkgList(pkgList, otherPkgList []Package, goPkg, otherGoPkg *GoPkg, pkgMap map[string]string) {
 	sort.Sort(&ByName{pkgList})
 	sort.Sort(&ByName{otherPkgList})
 	counter1 := len(pkgList)
@@ -162,7 +121,7 @@ func (self *DepCheck) cmpPkgList(pkgList, otherPkgList []Package, goPkg, otherGo
 			if pkgList[iter1].Branch != otherPkgList[iter2].Branch {
 				counter1--
 				counter2--
-				result := self.resolveDep(pkgList[iter1], otherPkgList[iter2])
+				result := resolveDep(pkgList[iter1], otherPkgList[iter2])
 				if result != "" {
 					pkgMap[pkgList[iter1].Name] = result
 				} else {
@@ -192,11 +151,11 @@ func (self *DepCheck) cmpPkgList(pkgList, otherPkgList []Package, goPkg, otherGo
 	}
 }
 
-func (self *DepCheck) resolveDep(pkg1, pkg2 Package) string {
-	if pkg1.Branch == "self" {
+func resolveDep(pkg1, pkg2 Package) string {
+	if pkg1.BranchIsPath() {
 		return pkg1.Branch
 	}
-	if pkg2.Branch == "self" {
+	if pkg2.BranchIsPath() {
 		return pkg2.Branch
 	}
 	branch1, _ := git.refNameToCommit(pkg1)
@@ -215,11 +174,11 @@ func (self *DepCheck) resolveDep(pkg1, pkg2 Package) string {
 	if branch1[0] == '<' {
 		//check if branch2 is < than branch1
 		if branch2[0] == '>' || branch2[0] == '<' {
-			if !self.isOlderThan(branch2[1:], branch1[1:], pkg1) {
+			if !isOlderThan(branch2[1:], branch1[1:], pkg1) {
 				okay = false
 			}
 		} else {
-			if !self.isOlderThan(branch2, branch1[1:], pkg1) {
+			if !isOlderThan(branch2, branch1[1:], pkg1) {
 				okay = false
 			}
 		}
@@ -227,11 +186,11 @@ func (self *DepCheck) resolveDep(pkg1, pkg2 Package) string {
 	if branch1[0] == '>' {
 		//check if branch2 is > than branch1
 		if branch2[0] == '>' || branch2[0] == '<' {
-			if !self.isOlderThan(branch1[1:], branch2[1:], pkg1) {
+			if !isOlderThan(branch1[1:], branch2[1:], pkg1) {
 				okay = false
 			}
 		} else {
-			if !self.isOlderThan(branch1[1:], branch2, pkg1) {
+			if !isOlderThan(branch1[1:], branch2, pkg1) {
 				okay = false
 			}
 		}
@@ -242,7 +201,7 @@ func (self *DepCheck) resolveDep(pkg1, pkg2 Package) string {
 	return ""
 }
 
-func (self *DepCheck) isOlderThan(branch1, branch2 string, pkg Package) bool {
+func isOlderThan(branch1, branch2 string, pkg Package) bool {
 	gitLog, err := git.log(pkg, "")
 	if err != nil {
 		fmt.Printf(err.Error())
@@ -260,8 +219,7 @@ func (self *DepCheck) isOlderThan(branch1, branch2 string, pkg Package) bool {
 	return age1 > age2
 }
 
-// writeGofileLock writes the collected dependencies to Gofile.Lock
-func (self *DepCheck) writeGofileLock(deps map[string]string) {
+func writeGofileLock(deps map[string]string) {
 	packages := make([]Package, len(deps))
 	iter := 0
 	for name, branch := range deps {

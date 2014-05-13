@@ -15,52 +15,49 @@ var cmdBuild = &Command{
 	Name: "build",
 }
 
+var binName string = "a.out"
+
 func build(args []string) {
-	binName := args[0]
-	setGoPath()
-	if binName == "" {
-		binName = "a.out"
+	if len(args) > 0 {
+		binName = args[0]
 	}
+	setGoPath()
 
 	binName = strings.TrimSpace(binName)
 	binName = strings.Replace(binName, "\n", "", -1)
 
-	sourceFiles, err := getSourceFiles()
-	if err != nil {
-		fmt.Printf("while trying to collect source files: " + err.Error())
-	}
-	myArgs := []string{}
-	myArgs = append(myArgs, "build")
-	myArgs = append(myArgs, "-o")
-	myArgs = append(myArgs, binName)
-	myArgs = append(myArgs, sourceFiles...)
+	cmdArgs := []string{"build", "-o", binName}
+	cmdArgs = append(cmdArgs, getSourceFiles()...)
 
 	execBuild := exec.Command(
 		"go",
-		myArgs...,
+		cmdArgs...,
 	)
+
 	out, err := execBuild.CombinedOutput()
 	if err != nil {
 		fmt.Printf("%s\n", out)
 	}
 }
 
-func getSourceFiles() ([]string, error) {
+func getSourceFiles() []string {
 	cwd, err := os.Getwd()
-	var glob []string
 	if err != nil {
-		return nil, fmt.Errorf("while trying to get working dir: " + err.Error())
+		stderrAndExit(err)
 	}
+
 	sourceFiles, err := filepath.Glob(cwd + "/*\\.go")
 	if err != nil {
-		return nil, fmt.Errorf("while trying to get glob filepath: " + err.Error())
+		stderrAndExit(err)
 	}
+
 	regex := regexp.MustCompile("^\\.go")
+	var glob []string
 	for _, file := range sourceFiles {
 		base := path.Base(file)
 		if !regex.MatchString(base) {
 			glob = append(glob, base)
 		}
 	}
-	return glob, nil
+	return glob
 }

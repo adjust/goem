@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"path"
 )
 
 // Package is a struct to hold a repository name and the desired branch
@@ -12,7 +14,7 @@ type Package struct {
 }
 
 func (self *Package) BranchIsPath() bool {
-	if self.Branch[0] == '/' || self.Branch[0] == '.' {
+	if self.Branch[0] == '/' || self.Branch[0] == '.' || self.Branch == "self" {
 		return true
 	}
 	return false
@@ -24,6 +26,49 @@ func (self *Package) SourceExist() bool {
 		return false
 	}
 	return true
+}
+
+func (self *Package) GetSource() {
+	err := git.clone(*self)
+	if err != nil {
+		delErr := os.RemoveAll(path.Dir(getGoPath() + "/src/" + self.Name))
+		if delErr != nil {
+			fmt.Printf("An error occured while getting the source, but i am unable to tidy up\n")
+			fmt.Printf("Please remove %s manually\n\n", path.Dir(getGoPath()+"/src/"+self.Name))
+		}
+		stderrAndExit(err)
+	}
+}
+
+func (self *Package) UpdateSource() {
+	err := git.pull(*self)
+	if err != nil {
+		stderrAndExit(err)
+	}
+}
+
+func (self *Package) SetHead() {
+	err := git.checkout(*self, "")
+	if err != nil {
+		stderrAndExit(err)
+	}
+}
+
+func (self *Package) CreateSymlink() {
+	name, err := os.Getwd()
+	if err != nil {
+		stderrAndExit(err)
+	}
+	name += "/" + self.Branch
+	err = os.RemoveAll(getGoPath() + "/src/" + self.Name)
+	if err != nil {
+		stderrAndExit(err)
+	}
+	os.Mkdir(getGoPath()+"/src/", 0777)
+	err = os.Symlink(name, getGoPath()+"/src/"+self.Name)
+	if err != nil {
+		stderrAndExit(err)
+	}
 }
 
 type Packages []Package

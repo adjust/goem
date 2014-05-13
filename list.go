@@ -10,10 +10,8 @@ import (
 var srcPath string = getGoPath() + "/src/"
 
 var cmdList = &Command{
-	Usage: "dummy",
-	Long:  "dummy",
-	Run:   list,
-	Name:  "list",
+	Run:  list,
+	Name: "list",
 }
 
 // list() prints all installed go extensions to stdout
@@ -22,8 +20,7 @@ var cmdList = &Command{
 func list(args []string) {
 	results, err := dirRead(0, srcPath, nil)
 	if err != nil {
-		fmt.Printf("while dirRead(): " + err.Error())
-		os.Exit(1)
+		stderrAndExit(err)
 	}
 	for _, result := range results {
 		fmt.Printf("%s\n", result)

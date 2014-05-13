@@ -32,3 +32,8 @@ func setGoPath() {
 
 	os.Setenv("GOPATH", cwd+"/.go")
 }
+
+func stderrAndExit(err error) {
+	fmt.Fprintln(os.Stderr, err.Error())
+	os.Exit(1)
+}
