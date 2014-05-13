@@ -1,19 +1,16 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"strings"
 )
 
 type Command struct {
 	// args does not include the command name
-	Run  func(args []string)
-	Flag flag.FlagSet
-
-	Usage string // first word is the command name
-	Short string // `redismq help` output
-	Long  string // `redismq help cmd` output
+	Run   func(args []string)
+	Usage string
+	Short string
+	Long  string
 	Name  string
 }
 

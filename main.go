@@ -6,7 +6,7 @@ import (
 )
 
 var commands = []*Command{
-	//cmdInit,
+	cmdInit,
 	cmdList,
 	cmdBundle,
 	cmdBuild,
@@ -25,14 +25,8 @@ func main() {
 	}
 
 	for _, cmd := range commands {
-		if cmd.Name == args[0] && cmd.Run != nil {
-			cmd.Flag.Usage = func() {
-				cmd.printUsage()
-			}
-			if err := cmd.Flag.Parse(args[1:]); err != nil {
-				os.Exit(1)
-			}
-			cmd.Run(cmd.Flag.Args())
+		if cmd.Name == args[0] && cmd.Runnable() {
+			cmd.Run(args)
 			return
 		}
 	}
