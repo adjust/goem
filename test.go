@@ -13,6 +13,7 @@ var cmdTest = &Command{
 }
 
 func test(args []string) {
+	config.parse("")
 	testDir := config.Testdir
 	setGoPath()
 	buildPackages := false

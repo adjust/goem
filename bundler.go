@@ -16,7 +16,7 @@ func Bundle(args []string) {
 	bundle(args)
 	dep := NewDepCheck(config, args)
 	dep.Start()
-	config = NewLockConfig()
+	config.parse("Gofile.lock")
 	bundle(args)
 }
 
@@ -29,6 +29,7 @@ func initBundle() {
 			os.Exit(1)
 		}
 	}
+	config.parse("")
 }
 
 func bundle(args []string) {

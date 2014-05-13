@@ -28,18 +28,7 @@ type Env struct {
 	Packages []Package `json:"packages"`
 }
 
-var config *Config
-
-func init() {
-	config = &Config{}
-	config.parse("")
-}
-
-func NewLockConfig() *Config {
-	config := &Config{}
-	config.parse("Gofile.lock")
-	return config
-}
+var config *Config = &Config{}
 
 func InitConfig(args []string) {
 	gofile := "./Gofile"
