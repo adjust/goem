@@ -6,13 +6,8 @@ import (
 )
 
 var cmdHelp = &Command{
-	Usage: "help blah",
-	Long:  "blah keys",
-	Name:  "help",
-}
-
-func init() {
-	cmdHelp.Run = Help
+	Run:  Help,
+	Name: "help",
 }
 
 func Help(args []string) {
