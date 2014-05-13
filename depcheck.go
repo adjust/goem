@@ -22,9 +22,9 @@ type DepCheck struct {
 }
 
 // Constructor that sets the defaults
-func NewDepCheck(config *Config, subOption string) *DepCheck {
+func NewDepCheck(config *Config, args []string) *DepCheck {
 	q := false
-	if len(subOption) > 0 && subOption[0] == 'q' {
+	if len(args) > 0 && args[0][0] == 'q' {
 		q = true
 	}
 	return &DepCheck{

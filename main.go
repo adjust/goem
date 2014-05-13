@@ -26,7 +26,7 @@ func main() {
 
 	for _, cmd := range commands {
 		if cmd.Name == args[0] && cmd.Runnable() {
-			cmd.Run(args)
+			cmd.Run(args[1:])
 			return
 		}
 	}

@@ -7,17 +7,13 @@ import (
 	"strings"
 )
 
-var srcPath string
+var srcPath string = getGoPath() + "/src/"
 
 var cmdList = &Command{
 	Usage: "dummy",
 	Long:  "dummy",
 	Run:   list,
 	Name:  "list",
-}
-
-func init() {
-	srcPath = getGoPath() + "/src/"
 }
 
 // list() prints all installed go extensions to stdout

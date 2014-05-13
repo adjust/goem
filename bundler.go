@@ -12,21 +12,27 @@ var cmdBundle = &Command{
 }
 
 func Bundle(args []string) {
+	initBundle()
 	bundle(args)
-	dep := NewDepCheck(config, args[0])
+	dep := NewDepCheck(config, args)
 	dep.Start()
 	config = NewLockConfig()
 	bundle(args)
 }
 
-func bundle(args []string) {
-	err := makeBase()
-	found := false
-	if err != nil {
-		fmt.Printf("the following error occured while bundling\n")
-		fmt.Printf("\n%s\n", err.Error())
-		os.Exit(1)
+func initBundle() {
+	goDirs := [3]string{"/src", "/pkg", "/bin"}
+	for _, ext := range goDirs {
+		err := os.MkdirAll(getGoPath()+ext, 0777)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "while creating needed dirs: "+err.Error())
+			os.Exit(1)
+		}
 	}
+}
+
+func bundle(args []string) {
+	found := false
 	for _, env := range config.Env {
 		if getGoEnv() == env.Name {
 			getPackages(env.Packages)
@@ -43,17 +49,6 @@ func bundle(args []string) {
 			}
 		}
 	}
-}
-
-func makeBase() error {
-	goDirs := [3]string{"/src", "/pkg", "/bin"}
-	for _, ext := range goDirs {
-		err := os.MkdirAll(getGoPath()+ext, 0777)
-		if err != nil {
-			return fmt.Errorf("while creating needed dirs: " + err.Error())
-		}
-	}
-	return nil
 }
 
 // getPackages() checks if there is already the wanted source
