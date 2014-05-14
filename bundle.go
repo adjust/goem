@@ -5,14 +5,14 @@ import (
 )
 
 var cmdBundle = &Command{
-	Run:  Bundle,
+	Run:  bundle,
 	Name: "bundle",
 }
 
-func Bundle(args []string) {
+func bundle(args []string) {
 	makeBase()
 	installDeps("")
-	ResolveDeps(args)
+	resolveDeps(args)
 	installDeps("Gofile.lock")
 }
 
@@ -49,15 +49,15 @@ func installDeps(gofile string) {
 
 func getPackages(packages []Package) {
 	for _, pkg := range packages {
-		if pkg.BranchIsPath() {
-			pkg.CreateSymlink()
+		if pkg.branchIsPath() {
+			pkg.createSymlink()
 			continue
 		}
-		if pkg.SourceExist() {
-			pkg.UpdateSource()
+		if pkg.sourceExist() {
+			pkg.updateSource()
 		} else {
-			pkg.GetSource()
+			pkg.getSource()
 		}
-		pkg.SetHead()
+		pkg.setHead()
 	}
 }

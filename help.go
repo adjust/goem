@@ -6,11 +6,11 @@ import (
 )
 
 var cmdHelp = &Command{
-	Run:  Help,
+	Run:  help,
 	Name: "help",
 }
 
-func Help(args []string) {
+func help(args []string) {
 	if len(args) == 0 {
 		helpHelp()
 		return

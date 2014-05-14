@@ -14,9 +14,6 @@ var cmdList = &Command{
 	Name: "list",
 }
 
-// list() prints all installed go extensions to stdout
-// it does so by calling dirRead()
-// on error it prints it and exits
 func list(args []string) {
 	results, err := dirRead(0, srcPath, nil)
 	if err != nil {
@@ -27,8 +24,6 @@ func list(args []string) {
 	}
 }
 
-// dirRead crawls the current GOPATH and returns an array which holds all packages
-// if an error occurs it returns it, nil otherwise
 func dirRead(called int, path string, result []string) ([]string, error) {
 	if result == nil {
 		result = make([]string, 1)

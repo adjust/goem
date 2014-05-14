@@ -13,14 +13,14 @@ type Package struct {
 	Branch string
 }
 
-func (self *Package) BranchIsPath() bool {
+func (self *Package) branchIsPath() bool {
 	if self.Branch[0] == '/' || self.Branch[0] == '.' || self.Branch == "self" {
 		return true
 	}
 	return false
 }
 
-func (self *Package) SourceExist() bool {
+func (self *Package) sourceExist() bool {
 	dir := getGoPath() + "/src/" + self.Name
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return false
@@ -28,7 +28,7 @@ func (self *Package) SourceExist() bool {
 	return true
 }
 
-func (self *Package) GetSource() {
+func (self *Package) getSource() {
 	err := git.clone(*self)
 	if err != nil {
 		delErr := os.RemoveAll(path.Dir(getGoPath() + "/src/" + self.Name))
@@ -40,21 +40,21 @@ func (self *Package) GetSource() {
 	}
 }
 
-func (self *Package) UpdateSource() {
+func (self *Package) updateSource() {
 	err := git.pull(*self)
 	if err != nil {
 		stderrAndExit(err)
 	}
 }
 
-func (self *Package) SetHead() {
+func (self *Package) setHead() {
 	err := git.checkout(*self, "")
 	if err != nil {
 		stderrAndExit(err)
 	}
 }
 
-func (self *Package) CreateSymlink() {
+func (self *Package) createSymlink() {
 	name, err := os.Getwd()
 	if err != nil {
 		stderrAndExit(err)

@@ -7,7 +7,7 @@ import (
 )
 
 var cmdInit = &Command{
-	Run:  InitConfig,
+	Run:  initConfig,
 	Name: "init",
 }
 
@@ -24,13 +24,13 @@ type Env struct {
 
 var config *Config = &Config{}
 
-func InitConfig(args []string) {
+func initConfig(args []string) {
 	gofile := "./Gofile"
 	if fileExists(gofile) {
 		stderrAndExit(fmt.Errorf("Gofile already exists"))
 	}
-	dev_env := Env{"development", []Package{}}
-	config := &Config{[]Env{dev_env}, "./test", ""}
+	devEnv := Env{"development", []Package{}}
+	config := &Config{[]Env{devEnv}, "./test", ""}
 	config.write("./Gofile")
 }
 

@@ -12,7 +12,7 @@ type GoPkg struct {
 	config *Config
 }
 
-func ResolveDeps(args []string) {
+func resolveDeps(args []string) {
 	if len(args) > 0 && args[0][0] == 'q' {
 		quiet = true
 	}
@@ -147,10 +147,10 @@ func cmpPkgList(pkgList, otherPkgList []Package, goPkg, otherGoPkg *GoPkg, pkgMa
 }
 
 func resolveDep(pkg1, pkg2 Package) string {
-	if pkg1.BranchIsPath() {
+	if pkg1.branchIsPath() {
 		return pkg1.Branch
 	}
-	if pkg2.BranchIsPath() {
+	if pkg2.branchIsPath() {
 		return pkg2.Branch
 	}
 	branch1, _ := git.refNameToCommit(pkg1)

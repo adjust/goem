@@ -17,9 +17,8 @@ func getGoPath() string {
 	goPath, err := os.Getwd()
 	if err != nil {
 		stderrAndExit(err)
-	} else {
-		goPath += "/.go/"
 	}
+	goPath += "/.go/"
 	return goPath
 }
 

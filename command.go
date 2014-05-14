@@ -14,6 +14,6 @@ type Command struct {
 	Name string
 }
 
-func (c *Command) Runnable() bool {
+func (c *Command) runnable() bool {
 	return c.Run != nil
 }

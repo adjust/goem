@@ -15,9 +15,8 @@ var cmdBuild = &Command{
 	Name: "build",
 }
 
-var binName string = "a.out"
-
 func build(args []string) {
+	var binName = "a.out"
 	if len(args) > 0 {
 		binName = args[0]
 	}
@@ -28,7 +27,6 @@ func build(args []string) {
 
 	cmdArgs := []string{"build", "-o", binName}
 	cmdArgs = append(cmdArgs, getSourceFiles()...)
-
 	execBuild := exec.Command(
 		"go",
 		cmdArgs...,
@@ -46,12 +44,12 @@ func getSourceFiles() []string {
 		stderrAndExit(err)
 	}
 
-	sourceFiles, err := filepath.Glob(cwd + "/*\\.go")
+	sourceFiles, err := filepath.Glob(cwd + `/*\.go$`)
 	if err != nil {
 		stderrAndExit(err)
 	}
 
-	regex := regexp.MustCompile("^\\.go")
+	regex := regexp.MustCompile(`^\.go$`)
 	var glob []string
 	for _, file := range sourceFiles {
 		base := path.Base(file)

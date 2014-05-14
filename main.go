@@ -12,7 +12,7 @@ func main() {
 		os.Exit(1)
 	}
 	for _, cmd := range commands {
-		if cmd.Name == args[0] && cmd.Runnable() {
+		if cmd.Name == args[0] && cmd.runnable() {
 			cmd.Run(args[1:])
 			return
 		}
