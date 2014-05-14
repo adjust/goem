@@ -9,6 +9,8 @@ var cmdBundle = &Command{
 	Name: "bundle",
 }
 
+var bundled = map[string]string{}
+
 func bundle(args []string) {
 	makeBase()
 	installDeps("")
@@ -52,11 +54,15 @@ func getPackages(packages []Package) {
 			pkg.createSymlink()
 			continue
 		}
+		if bundled[pkg.Name] == pkg.Branch {
+			continue
+		}
 		if pkg.sourceExist() {
 			pkg.updateSource()
 		} else {
 			pkg.getSource()
 		}
 		pkg.setHead()
+		bundled[pkg.Name] = pkg.Branch
 	}
 }

@@ -4,7 +4,7 @@
 			"name": "development",
 			"packages": [
 				{
-					"Name": "github.com/adjust/goenv",
+					"Name": "github.com/adjust/backend",
 					"Branch": "master"
 				},
 				{
