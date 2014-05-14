@@ -22,7 +22,9 @@ _testmain.go
 *.exe
 
 #local go folder
-
 .go
-
 .DS_Store
+*.swp
+TODO
+*Gofile.lock
+goem
