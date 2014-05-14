@@ -17,7 +17,6 @@ func test(args []string) {
 	if len(args) > 0 {
 		testDir = args[len(args)-1]
 	}
-	fmt.Println("TESTDIR: " + testDir)
 	setGoPath()
 	buildPackages := false
 	if testDir == "" {
@@ -40,7 +39,6 @@ func test(args []string) {
 		"test",
 		testCommand,
 	)
-	fmt.Println("go test " + testCommand)
 	out, err := execTest.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(out))
