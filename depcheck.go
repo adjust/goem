@@ -25,8 +25,9 @@ func resolveDeps(args []string) {
 		if before == after {
 			break
 		}
+		writeGofileLock(pkgMap)
+		installDeps("Gofile.lock")
 	}
-	writeGofileLock(pkgMap)
 }
 
 func getGofiles() []*GoPkg {

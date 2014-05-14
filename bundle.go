@@ -13,7 +13,6 @@ func bundle(args []string) {
 	makeBase()
 	installDeps("")
 	resolveDeps(args)
-	installDeps("Gofile.lock")
 }
 
 func makeBase() {
