@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 var cmdTest = &Command{
@@ -14,17 +13,20 @@ var cmdTest = &Command{
 
 func test(args []string) {
 	config.parse("")
-	testDir := config.Testdir
+	var testDir string
+	if len(args) > 0 {
+		testDir = args[len(args)-1]
+	}
+	fmt.Println("TESTDIR: " + testDir)
 	setGoPath()
 	buildPackages := false
 	if testDir == "" {
 		testDir = config.Testdir
-	} else {
-		dirs := strings.Split(testDir, " ")
-		if len(dirs) > 1 && dirs[0] == "-i" {
+	}
+	for _, arg := range args {
+		if arg == "-i" {
 			buildPackages = true
 		}
-		testDir = dirs[len(dirs)-1]
 	}
 	os.Chdir(testDir)
 
@@ -42,6 +44,7 @@ func test(args []string) {
 	out, err := execTest.CombinedOutput()
 	if err != nil {
 		fmt.Println(string(out))
+		os.Exit(1)
 	} else {
 		fmt.Printf("%s\n", out)
 	}
