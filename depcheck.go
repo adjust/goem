@@ -90,7 +90,7 @@ func checkDeep(goPkg *GoPkg, goPkgs []*GoPkg, pkgMap map[string]string) {
 	}
 }
 
-func getPkgForEnv(goPkg *GoPkg) []Package {
+func getPkgForEnv(goPkg *GoPkg) []*Package {
 	if len(goPkg.config.Env) == 1 {
 		goPkg.config.Env[0].Name = getGoEnv()
 	}
@@ -102,7 +102,7 @@ func getPkgForEnv(goPkg *GoPkg) []Package {
 	return nil
 }
 
-func cmpPkgList(pkgList, otherPkgList []Package, goPkg, otherGoPkg *GoPkg, pkgMap map[string]string) {
+func cmpPkgList(pkgList, otherPkgList []*Package, goPkg, otherGoPkg *GoPkg, pkgMap map[string]string) {
 	sort.Sort(&ByName{pkgList})
 	sort.Sort(&ByName{otherPkgList})
 	counter1 := len(pkgList)
@@ -147,7 +147,7 @@ func cmpPkgList(pkgList, otherPkgList []Package, goPkg, otherGoPkg *GoPkg, pkgMa
 	}
 }
 
-func resolveDep(pkg1, pkg2 Package) string {
+func resolveDep(pkg1, pkg2 *Package) string {
 	if pkg1.branchIsPath() {
 		return pkg1.Branch
 	}
@@ -197,7 +197,7 @@ func resolveDep(pkg1, pkg2 Package) string {
 	return ""
 }
 
-func isOlderThan(branch1, branch2 string, pkg Package) bool {
+func isOlderThan(branch1, branch2 string, pkg *Package) bool {
 	gitLog, err := git.log(pkg, "")
 	if err != nil {
 		fmt.Printf(err.Error())
@@ -216,15 +216,15 @@ func isOlderThan(branch1, branch2 string, pkg Package) bool {
 }
 
 func writeGofileLock(deps map[string]string) {
-	packages := make([]Package, len(deps))
+	packages := make([]*Package, len(deps))
 	iter := 0
 	for name, branch := range deps {
-		pkg := Package{Name: name, Branch: branch}
+		pkg := &Package{Name: name, Branch: branch}
 		packages[iter] = pkg
 		iter++
 	}
-	env := Env{Name: getGoEnv(), Packages: packages}
-	content := []Env{env}
+	env := &Env{Name: getGoEnv(), Packages: packages}
+	content := []*Env{env}
 	config := &Config{Env: content}
 	config.write("./Gofile.lock")
 }

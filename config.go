@@ -12,14 +12,14 @@ var cmdInit = &Command{
 }
 
 type Config struct {
-	Env     []Env  `json:"env"`
+	Env     []*Env `json:"env"`
 	Testdir string `json:"testdir"`
 	Mirror  string `json:"mirror"`
 }
 
 type Env struct {
-	Name     string    `json:"name"`
-	Packages []Package `json:"packages"`
+	Name     string     `json:"name"`
+	Packages []*Package `json:"packages"`
 }
 
 var config *Config = &Config{}
@@ -29,8 +29,8 @@ func initConfig(args []string) {
 	if fileExists(gofile) {
 		stderrAndExit(fmt.Errorf("Gofile already exists"))
 	}
-	devEnv := Env{"development", []Package{}}
-	config := &Config{[]Env{devEnv}, "./test", ""}
+	devEnv := &Env{"development", []*Package{}}
+	config := &Config{[]*Env{devEnv}, "./test", ""}
 	config.write("./Gofile")
 }
 
