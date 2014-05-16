@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 )
 
 // Package is a struct to hold a repository name and the desired branch
@@ -11,6 +12,11 @@ import (
 type Package struct {
 	Name   string
 	Branch string
+	GitUrl string
+}
+
+func (self *Package) setGitUrl() {
+	self.GitUrl = strings.Replace(self.Name, "github.com", "github.com:", -1)
 }
 
 func (self *Package) branchIsPath() bool {

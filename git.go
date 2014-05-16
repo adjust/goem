@@ -14,11 +14,10 @@ type Git struct{}
 var git Git
 
 func (self *Git) clone(pkg *Package) error {
-	gitUrl := strings.Replace(pkg.Name, "github.com", "github.com:", -1)
 	cmd := exec.Command(
 		"git",
 		"clone",
-		"git@"+gitUrl+".git",
+		"git@"+pkg.GitUrl+".git",
 		getGoPath()+"/src/"+pkg.Name,
 	)
 	out, err := cmd.CombinedOutput()

@@ -46,6 +46,11 @@ func (self *Config) parse(gofile string) {
 	if err != nil {
 		stderrAndExit(err)
 	}
+	for _, env := range self.Env {
+		for _, pkg := range env.Packages {
+			pkg.setGitUrl()
+		}
+	}
 }
 
 func (self *Config) write(gofile string) {
