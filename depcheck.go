@@ -12,7 +12,7 @@ type GoPkg struct {
 	config *Config
 }
 
-func resolveDeps(args []string) {
+func resolveDeps(args []string, mirrored bool) {
 	if len(args) > 0 && args[0][0] == 'q' {
 		quiet = true
 	}
@@ -26,7 +26,7 @@ func resolveDeps(args []string) {
 			break
 		}
 		writeGofileLock(pkgMap)
-		installDeps("Gofile.lock")
+		installDeps("Gofile.lock", mirrored)
 	}
 }
 
@@ -222,6 +222,6 @@ func writeGofileLock(deps map[string]string) {
 	}
 	env := &Env{Name: getGoEnv(), Packages: packages}
 	content := []*Env{env}
-	config := &Config{Env: content}
+	config := &Config{Env: content, Mirror: config.Mirror}
 	config.write("./Gofile.lock")
 }

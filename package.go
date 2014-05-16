@@ -19,6 +19,10 @@ func (self *Package) setGitUrl() {
 	self.GitUrl = strings.Replace(self.Name, "github.com", "github.com:", -1)
 }
 
+func (self *Package) setMirroredGitUrl(mirror string) {
+	self.GitUrl = strings.Replace(self.GitUrl, "github.com", mirror, -1)
+}
+
 func (self *Package) branchIsPath() bool {
 	if self.Branch[0] == '/' || self.Branch[0] == '.' || self.Branch == "self" {
 		return true

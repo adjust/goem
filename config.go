@@ -53,6 +53,15 @@ func (self *Config) parse(gofile string) {
 	}
 }
 
+func (self *Config) mirrored() {
+	for _, env := range self.Env {
+		for _, pkg := range env.Packages {
+			pkg.setMirroredGitUrl(self.Mirror)
+			fmt.Println(pkg)
+		}
+	}
+}
+
 func (self *Config) write(gofile string) {
 	j, err := json.MarshalIndent(self, "", "\t")
 	if err != nil {

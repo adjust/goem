@@ -8,6 +8,7 @@ var commands = []*Command{
 	cmdTest,
 	cmdHelp,
 	cmdMirrorConfig,
+	cmdMirrorBundle,
 	cmdMirrorPush,
 }
 
