@@ -15,43 +15,34 @@ var cmdList = &Command{
 }
 
 func list(args []string) {
-	results, err := dirRead(0, srcPath, nil)
-	if err != nil {
-		stderrAndExit(err)
-	}
+	results := dirRead(0, srcPath, nil)
 	for _, result := range results {
 		fmt.Printf("%s\n", result)
 	}
 }
 
-func dirRead(called int, path string, result []string) ([]string, error) {
+func dirRead(called int, path string, result []string) []string {
 	if result == nil {
-		result = make([]string, 1)
+		result = []string{}
 	}
 	called++
 	if called == 4 {
-		return result, nil
+		return result
 	}
 	dirGlob, err := filepath.Glob(path + "/*")
 	if err != nil {
-		return nil, fmt.Errorf("while calling Glob on %s: %s\n", path, err.Error())
+		stderrAndExit(err)
 	}
-
 	cwd, err := os.Getwd()
 	if err != nil {
-		return nil, fmt.Errorf("while trying to get current working dir: " + err.Error())
+		stderrAndExit(err)
 	}
 	for _, dir := range dirGlob {
-		result, _ = dirRead(called, dir, result)
+		result = dirRead(called, dir, result)
 		if called == 3 {
-			temp := make([]string, len(result)+1)
-			for i, v := range result {
-				temp[i] = v
-			}
-			result = temp
 			goSrcDir := filepath.FromSlash(cwd + "/.go/src/")
-			result[len(result)-1] = strings.Replace(dir, goSrcDir, "", -1)
+			result = append(result, strings.Replace(dir, goSrcDir, "", -1))
 		}
 	}
-	return result, nil
+	return result
 }

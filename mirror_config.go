@@ -20,19 +20,11 @@ repo    {{ $elem }}
 `
 
 func mirrorConfig(args []string) {
-	repos, err := dirRead(0, srcPath, nil)
-	if err != nil {
-		stderrAndExit(err)
-	}
-	cleaned := []string{}
-	for i, repo := range repos {
-		if repo == "" {
-			continue
-		}
+	repos := dirRead(0, srcPath, nil)
+	for i, _ := range repos {
 		repos[i] = strings.Replace(repos[i], "github.com/", "", 1)
-		cleaned = append(cleaned, repos[i])
 	}
-	templateGitoliteConfig(cleaned)
+	templateGitoliteConfig(repos)
 }
 
 func templateGitoliteConfig(repos []string) {

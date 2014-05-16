@@ -31,10 +31,7 @@ func resolveDeps(args []string) {
 }
 
 func getGofiles() []*GoPkg {
-	packages, err := dirRead(0, getGoPath()+"/src", nil)
-	if err != nil {
-		stderrAndExit(err)
-	}
+	packages := dirRead(0, getGoPath()+"/src", nil)
 	goPkgs := make([]*GoPkg, len(packages))
 	for i, pkg := range packages {
 		if pkg == "" {
