@@ -13,6 +13,22 @@ type Git struct{}
 
 var git Git
 
+func (self *Git) push(dir, mirror, remote string) {
+	oldDir := self.dirSwap(nil, fmt.Sprintf("%s/src/%s", getGoPath(), dir))
+	cmd := exec.Command(
+		"git",
+		"push",
+		"--all",
+		fmt.Sprintf("git@%s:%s", mirror, remote),
+	)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(string(out))
+		stderrAndExit(err)
+	}
+	self.dirSwap(nil, oldDir)
+}
+
 func (self *Git) clone(pkg *Package) error {
 	cmd := exec.Command(
 		"git",
@@ -141,7 +157,10 @@ func (self *Git) dirSwap(pkg *Package, dir string) string {
 	if dir == "" {
 		dir = getGoPath() + "/src/" + pkg.Name
 	}
-	os.Chdir(dir)
+	err = os.Chdir(dir)
+	if err != nil {
+		stderrAndExit(err)
+	}
 	return oldDir
 }
 
