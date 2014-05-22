@@ -7,6 +7,9 @@ var commands = []*Command{
 	cmdBuild,
 	cmdTest,
 	cmdHelp,
+	cmdMirrorConfig,
+	cmdMirrorBundle,
+	cmdMirrorPush,
 }
 
 type Command struct {

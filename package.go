@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 )
 
 // Package is a struct to hold a repository name and the desired branch
@@ -11,6 +12,15 @@ import (
 type Package struct {
 	Name   string
 	Branch string
+	GitUrl string
+}
+
+func (self *Package) setGitUrl() {
+	self.GitUrl = strings.Replace(self.Name, "github.com", "github.com:", -1)
+}
+
+func (self *Package) setMirroredGitUrl(mirror string) {
+	self.GitUrl = strings.Replace(self.GitUrl, "github.com", mirror, -1)
 }
 
 func (self *Package) branchIsPath() bool {
@@ -29,7 +39,7 @@ func (self *Package) sourceExist() bool {
 }
 
 func (self *Package) getSource() {
-	err := git.clone(*self)
+	err := git.clone(self)
 	if err != nil {
 		delErr := os.RemoveAll(path.Dir(getGoPath() + "/src/" + self.Name))
 		if delErr != nil {
@@ -41,14 +51,14 @@ func (self *Package) getSource() {
 }
 
 func (self *Package) updateSource() {
-	err := git.pull(*self)
+	err := git.pull(self)
 	if err != nil {
 		stderrAndExit(err)
 	}
 }
 
 func (self *Package) setHead() {
-	err := git.checkout(*self, "")
+	err := git.checkout(self, "")
 	if err != nil {
 		stderrAndExit(err)
 	}
@@ -71,7 +81,7 @@ func (self *Package) createSymlink() {
 	}
 }
 
-type Packages []Package
+type Packages []*Package
 
 func (self *Packages) Len() int {
 	return len(*self)

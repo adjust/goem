@@ -13,12 +13,27 @@ type Git struct{}
 
 var git Git
 
-func (self *Git) clone(pkg Package) error {
-	gitUrl := strings.Replace(pkg.Name, "github.com", "github.com:", -1)
+func (self *Git) push(dir, mirror, remote string) {
+	oldDir := self.dirSwap(nil, fmt.Sprintf("%s/src/%s", getGoPath(), dir))
+	cmd := exec.Command(
+		"git",
+		"push",
+		"--all",
+		fmt.Sprintf("git@%s:%s", mirror, remote),
+	)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(string(out))
+		stderrAndExit(err)
+	}
+	self.dirSwap(nil, oldDir)
+}
+
+func (self *Git) clone(pkg *Package) error {
 	cmd := exec.Command(
 		"git",
 		"clone",
-		"git@"+gitUrl+".git",
+		"git@"+pkg.GitUrl+".git",
 		getGoPath()+"/src/"+pkg.Name,
 	)
 	out, err := cmd.CombinedOutput()
@@ -28,7 +43,7 @@ func (self *Git) clone(pkg Package) error {
 	return nil
 }
 
-func (self *Git) checkout(pkg Package, branch string) error {
+func (self *Git) checkout(pkg *Package, branch string) error {
 	if branch == "" {
 		branch = self.checkBranch(pkg.Branch)
 	}
@@ -50,7 +65,7 @@ func (self *Git) checkout(pkg Package, branch string) error {
 	return nil
 }
 
-func (self *Git) pull(pkg Package) error {
+func (self *Git) pull(pkg *Package) error {
 	err := self.checkout(pkg, "master")
 	if err != nil {
 		return fmt.Errorf("git pull: %s", err.Error())
@@ -77,7 +92,7 @@ func (self *Git) pull(pkg Package) error {
 	return nil
 }
 
-func (self *Git) log(pkg Package, format string) ([]string, error) {
+func (self *Git) log(pkg *Package, format string) ([]string, error) {
 	if format == "" {
 		format = "%H"
 	}
@@ -108,7 +123,7 @@ func (self *Git) log(pkg Package, format string) ([]string, error) {
 	return strings.Split(string(data), "\n"), nil
 }
 
-func (self *Git) refNameToCommit(pkg Package) (string, error) {
+func (self *Git) refNameToCommit(pkg *Package) (string, error) {
 	gitlog, err := self.log(pkg, "%H %d")
 	if err != nil {
 		return "", fmt.Errorf("refNameToCommit: %s", err.Error())
@@ -134,7 +149,7 @@ func (self *Git) refNameToCommit(pkg Package) (string, error) {
 	return "", nil
 }
 
-func (self *Git) dirSwap(pkg Package, dir string) string {
+func (self *Git) dirSwap(pkg *Package, dir string) string {
 	oldDir, err := os.Getwd()
 	if err != nil {
 		fmt.Println("Could not switch dir: %s\n", err.Error())
@@ -142,7 +157,10 @@ func (self *Git) dirSwap(pkg Package, dir string) string {
 	if dir == "" {
 		dir = getGoPath() + "/src/" + pkg.Name
 	}
-	os.Chdir(dir)
+	err = os.Chdir(dir)
+	if err != nil {
+		stderrAndExit(err)
+	}
 	return oldDir
 }
 
