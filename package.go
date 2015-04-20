@@ -74,7 +74,7 @@ func (self *Package) createSymlink() {
 	if err != nil {
 		stderrAndExit(err)
 	}
-	os.Mkdir(getGoPath()+"/src/", 0777)
+	os.MkdirAll(path.Dir(getGoPath()+"/src/"+self.Name), 0777)
 	err = os.Symlink(name, getGoPath()+"/src/"+self.Name)
 	if err != nil {
 		stderrAndExit(err)
