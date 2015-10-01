@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"os/exec"
 	"path"
@@ -34,7 +34,7 @@ func build(args []string) {
 
 	out, err := execBuild.CombinedOutput()
 	if err != nil {
-		fmt.Printf("%s\n", out)
+		stderrAndExit(errors.New(string(out)))
 	}
 }
 
