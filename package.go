@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 )
@@ -13,6 +15,10 @@ type Package struct {
 	Name   string
 	Branch string
 	GitUrl string
+}
+
+func (self *Package) IsGitHub() bool {
+	return strings.HasPrefix(self.Name, "github.com/")
 }
 
 func (self *Package) setGitUrl() {
@@ -39,11 +45,20 @@ func (self *Package) sourceExist() bool {
 }
 
 func (self *Package) getSource() {
-	err := git.clone(self)
+	var err error
+	if self.IsGitHub() {
+		err = git.clone(self)
+	} else {
+		var out []byte
+		if out, err = exec.Command("go", "get", "-d", self.Name).CombinedOutput(); err != nil {
+			err = errors.New(string(out))
+		}
+	}
+
 	if err != nil {
 		delErr := os.RemoveAll(path.Dir(getGoPath() + "/src/" + self.Name))
 		if delErr != nil {
-			fmt.Printf("An error occured while getting the source, but i am unable to tidy up\n")
+			fmt.Printf("An error occured while getting the source, but I am unable to tidy up\n")
 			fmt.Printf("Please remove %s manually\n\n", path.Dir(getGoPath()+"/src/"+self.Name))
 		}
 		stderrAndExit(err)
@@ -51,7 +66,16 @@ func (self *Package) getSource() {
 }
 
 func (self *Package) updateSource() {
-	err := git.pull(self)
+	var err error
+	if self.IsGitHub() {
+		err = git.pull(self)
+	} else {
+		var out []byte
+		if out, err = exec.Command("go", "get", "-d", "-u", self.Name).CombinedOutput(); err != nil {
+			err = errors.New(string(out))
+		}
+	}
+
 	if err != nil {
 		stderrAndExit(err)
 	}
