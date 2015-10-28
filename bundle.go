@@ -52,6 +52,8 @@ func installDeps(gofile string, mirrored bool) {
 }
 
 func getPackages(packages []*Package) {
+	setGoPath()
+
 	for _, pkg := range packages {
 		if pkg.branchIsPath() {
 			pkg.createSymlink()
