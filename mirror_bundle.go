@@ -7,6 +7,6 @@ var cmdMirrorBundle = &Command{
 
 func mirrorBundle(args []string) {
 	makeBase()
-	installDeps("", true)
-	resolveDeps(args, true)
+	installedPackages := installDeps("", true)
+	resolveDeps(installedPackages, args, true)
 }

@@ -13,8 +13,8 @@ var bundled = map[string]string{}
 
 func bundle(args []string) {
 	makeBase()
-	installDeps("", false)
-	resolveDeps(args, false)
+	installedPackages := installDeps("", false)
+	resolveDeps(installedPackages, args, false)
 }
 
 func makeBase() {
@@ -27,31 +27,33 @@ func makeBase() {
 	}
 }
 
-func installDeps(gofile string, mirrored bool) {
+func installDeps(gofile string, mirrored bool) Packages {
 	config.parse(gofile)
 	if mirrored {
 		config.mirrored()
 	}
-	found := false
+
+	requestedEnvName := getGoEnv()
+
+	var developmentEnv *Env
 	for _, env := range config.Env {
-		if getGoEnv() == env.Name {
-			getPackages(env.Packages)
-			found = true
-			break
+		if env.Name == "development" {
+			developmentEnv = env
+		}
+
+		if env.Name == requestedEnvName {
+			return getPackages(env.Packages)
 		}
 	}
-	if !found {
-		for _, env := range config.Env {
-			if "development" == env.Name {
-				getPackages(env.Packages)
-				found = true
-				break
-			}
-		}
+
+	if developmentEnv != nil {
+		return getPackages(developmentEnv.Packages)
 	}
+
+	return nil
 }
 
-func getPackages(packages []*Package) {
+func getPackages(packages Packages) Packages {
 	setGoPath()
 
 	for _, pkg := range packages {
@@ -70,4 +72,6 @@ func getPackages(packages []*Package) {
 		pkg.setHead()
 		bundled[pkg.Name] = pkg.Branch
 	}
+
+	return packages
 }
