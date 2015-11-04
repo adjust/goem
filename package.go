@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path"
@@ -47,8 +48,10 @@ func (self *Package) sourceExist() bool {
 func (self *Package) getSource() {
 	var err error
 	if self.IsGitHub() {
+		log.Printf("cloning %s", self.Name)
 		err = git.clone(self)
 	} else {
+		log.Printf("getting %s", self.Name)
 		var out []byte
 		if out, err = exec.Command("go", "get", "-d", self.Name).CombinedOutput(); err != nil {
 			err = errors.New(string(out))
@@ -107,7 +110,7 @@ func (self *Package) createSymlink() {
 
 type Packages []*Package
 
-func (self *Packages) Len() int {
+func (self Packages) Len() int {
 	return len(*self)
 }
 
