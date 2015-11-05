@@ -107,8 +107,8 @@ func (self *Package) createSymlink() {
 
 type Packages []*Package
 
-func (self *Packages) Len() int {
-	return len(*self)
+func (self Packages) Len() int {
+	return len(self)
 }
 
 func (self Packages) Swap(i, j int) {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"path"
 	"sort"
 )
 
@@ -12,14 +13,15 @@ type GoPkg struct {
 	config *Config
 }
 
-func resolveDeps(args []string, mirrored bool) {
+func resolveDeps(packages Packages, args []string, mirrored bool) {
 	if len(args) > 0 && args[0][0] == 'q' {
 		quiet = true
 	}
+
 	pkgMap := map[string]string{}
 	for {
 		before := len(pkgMap)
-		subConfigs := getGofiles()
+		subConfigs := getGofiles(packages)
 		checkDeps(subConfigs, pkgMap)
 		after := len(pkgMap)
 		if before == after {
@@ -30,26 +32,24 @@ func resolveDeps(args []string, mirrored bool) {
 	}
 }
 
-func getGofiles() []*GoPkg {
-	packages := dirRead(0, getGoPath()+"/src", nil)
+func getGofiles(packages Packages) []*GoPkg {
+	goPath := getGoPath()
 	goPkgs := make([]*GoPkg, len(packages))
+
 	for i, pkg := range packages {
-		if pkg == "" {
-			continue
-		}
-		if fileExists(getGoPath() + "src/" + pkg + "/Gofile") {
+		gofilePath := path.Join(goPath, "src", pkg.Name, "Gofile")
+		if fileExists(gofilePath) {
 			goPkg := &GoPkg{
-				name:   pkg,
+				name:   pkg.Name,
 				config: &Config{},
 			}
-			goPkg.config.parse(getGoPath() + "src/" + pkg + "/Gofile")
+			goPkg.config.parse(gofilePath)
 			goPkgs[i] = goPkg
-		} else {
-			if !quiet {
-				fmt.Printf("Did not find a Gofile for: %s\n", pkg)
-			}
+		} else if !quiet {
+			fmt.Printf("Did not find a Gofile for: %s\n", pkg.Name)
 		}
 	}
+
 	return shrink(goPkgs)
 }
 
