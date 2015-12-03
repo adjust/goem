@@ -61,7 +61,7 @@ func getPackages(packages Packages) Packages {
 			pkg.createSymlink()
 			continue
 		}
-		if bundled[pkg.Name] == pkg.Branch {
+		if pkg.Branch != "" && bundled[pkg.Name] == pkg.Branch {
 			continue
 		}
 		if pkg.sourceExist() {

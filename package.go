@@ -30,6 +30,10 @@ func (self *Package) setMirroredGitUrl(mirror string) {
 }
 
 func (self *Package) branchIsPath() bool {
+	if self.Branch == "" {
+		return false
+	}
+
 	if self.Branch[0] == '/' || self.Branch[0] == '.' || self.Branch == "self" {
 		return true
 	}
