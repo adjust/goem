@@ -165,6 +165,10 @@ func (self *Git) dirSwap(pkg *Package, dir string) string {
 }
 
 func (self *Git) checkBranch(branch string) string {
+	if branch == "" {
+		return branch
+	}
+
 	if branch[0] == '>' || branch[0] == '<' {
 		return branch[1:]
 	}
